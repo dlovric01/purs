@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
+
 from hashlib import sha256
 
 app = Flask(__name__)
@@ -40,6 +41,8 @@ def login():
         cursor.execute(query, (password, email,))
 
         user = cursor.fetchone()
+        mysql.connection.commit()
+        cursor.close()
         if user:
             # user is valid to login
             session['username'] = email
@@ -54,11 +57,12 @@ def registracija():
     if request.method == 'GET':
         return render_template('register.html')
     elif request.method == 'POST':
+        cursor = mysql.connection.cursor()
+
         firstName = request.form.get('firstName')
         lastName = request.form.get('lastName')
         email = request.form.get('email')
-        password = sha256(request.form.get('password').encode()).hexdigest()
-        cursor = mysql.connection.cursor()
+        password = request.form.get('password')
         query = "SELECT * FROM users WHERE email = %s"
         cursor.execute(query, (email,))
         user = cursor.fetchone()
@@ -67,10 +71,13 @@ def registracija():
             # User already exists
             return render_template('register.html', error='This email is already in use')
         else:
+
             session['username'] = email
             # Insert the new user into the database
             query = "INSERT INTO users (firstName, lastName, email, password) VALUES (%s, %s, %s, UNHEX(SHA2(%s, 256)))"
             cursor.execute(query, (firstName, lastName, email, password,))
+            mysql.connection.commit()
+            cursor.close()
             return redirect(url_for('index')), 303
 
 
