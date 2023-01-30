@@ -3,13 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <title>{{title}}</title>
+    <script src="/static/index.js"></script>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='index_style.css') }}"
     />
   </head>
+
   <body>
+    <div class="container">
+      <a href="/logout" id="logout" class="btn">Logout</a>
+    </div>
     <h1>Početna stranica</h1>
-    <a href="/logout" class="register-button">Log out</a>
   </body>
 </html>

@@ -1,5 +1,4 @@
 body {
-    background-image: url('images/background.webp');
     background-position: center;
     background-repeat: no-repeat;
     background-size: auto;
@@ -35,6 +34,7 @@ a.register-button {
     border-radius: 20px;
     margin: 10px;
     margin-bottom: 50px;
+    text-align: center;
 }
 
 a.register-button:hover {
