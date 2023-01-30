@@ -4,7 +4,7 @@ from hashlib import sha256
 
 app = Flask(__name__)
 # define secret key for session
-app.secret_key = '_5#y2L"F4Q8z\n\xec]/'
+app.secret_key = '_5#y2L"aF4Qea4sseze\n\xec]/'
 
 # mysql database parameters
 app.config['MYSQL_HOST'] = 'localhost'
@@ -18,7 +18,7 @@ mysql = MySQL(app)
 
 # starting page with temperature data
 @app.route('/', methods=['GET'])
-def pocetna():
+def index():
     print(session)
 
     if 'username' in session:
@@ -36,14 +36,14 @@ def login():
         email = request.form.get('email')
         password = sha256(request.form.get('password').encode()).hexdigest()
         cursor = mysql.connection.cursor()
-        query = f"SELECT * FROM users WHERE HEX(password) = '{password}' AND email = '{email}'"
-        cursor.execute(query)
+        query = f"SELECT * FROM users WHERE HEX(password) = %s AND email = %s"
+        cursor.execute(query, (password, email,))
 
         user = cursor.fetchone()
         if user:
             # user is valid to login
             session['username'] = email
-            return redirect(url_for('pocetna')), 303
+            return redirect(url_for('index')), 303
         else:
             return render_template('login.html', error='Incorrect email or password')
 
@@ -54,17 +54,30 @@ def registracija():
     if request.method == 'GET':
         return render_template('register.html')
     elif request.method == 'POST':
-        # firstName = request.form.get('firstName')
-        # lastName = request.form.get('lastName')
-        # email = request.form.get('email')
-        # password = request.form.get('password')
+        firstName = request.form.get('firstName')
+        lastName = request.form.get('lastName')
+        email = request.form.get('email')
+        password = sha256(request.form.get('password').encode()).hexdigest()
+        cursor = mysql.connection.cursor()
+        query = "SELECT * FROM users WHERE email = %s"
+        cursor.execute(query, (email,))
+        user = cursor.fetchone()
 
-        # if email == 'test@gmail.com' and password == 'test':
-        #     session['username'] = 'test'
-        #     return redirect(url_for('pocetna')), 303
-        # else:
-        #     return render_template('login.html', error='Uneseni su krivi korisnički podaci')
-        return ''
+        if user:
+            # User already exists
+            return render_template('register.html', error='This email is already in use')
+        else:
+            session['username'] = email
+            # Insert the new user into the database
+            query = "INSERT INTO users (firstName, lastName, email, password) VALUES (%s, %s, %s, UNHEX(SHA2(%s, 256)))"
+            cursor.execute(query, (firstName, lastName, email, password,))
+            return redirect(url_for('index')), 303
+
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('index')), 303
 
 
 if __name__ == '__main__':

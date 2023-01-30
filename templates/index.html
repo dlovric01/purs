@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>{{title}}</title>
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='index_style.css') }}"
+    />
+  </head>
+  <body>
     <h1>Početna stranica</h1>
-</body>
+    <a href="/logout" class="register-button">Log out</a>
+  </body>
 </html>
