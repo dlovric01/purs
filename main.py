@@ -23,7 +23,14 @@ def index():
     print(session)
 
     if 'username' in session:
-        return render_template('index.html')
+
+        cursor = mysql.connection.cursor()
+        query = f'SELECT firstName, lastName FROM users WHERE email = %s'
+        cursor.execute(query, (session['username'],))
+        data = cursor.fetchone()
+        data1 = cursor.fetchall()
+
+        return render_template('index.html', data=data)
 
     return redirect(url_for('login')), 303
 
@@ -34,9 +41,9 @@ def login():
     if request.method == 'GET':
         return render_template('login.html')
     elif request.method == 'POST':
+        cursor = mysql.connection.cursor()
         email = request.form.get('email')
         password = sha256(request.form.get('password').encode()).hexdigest()
-        cursor = mysql.connection.cursor()
         query = f"SELECT * FROM users WHERE HEX(password) = %s AND email = %s"
         cursor.execute(query, (password, email,))
 
