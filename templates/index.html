@@ -1,10 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{title}}</title>
-</head>
-<body>
-    <h1>Početna stranica</h1>
-</body>
+  <head>
+    <link rel="icon" href="/static/images/Infinity.png" />
+    <meta charset="UTF-8" />
+    <title>Ad infinitum</title>
+    <script src="/static/index.js"></script>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='index_style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="dropdown">
+      <img
+        onclick="myFunction()"
+        class="dropbtn"
+        src="/static/images/ios-arrow-down.png"
+        alt=""
+      />
+      <div id="myDropdown" class="dropdown-content">
+        <a href="/logout">Logout</a>
+      </div>
+    </div>
+    <div class="nameWithLogo">
+      <img class="logo" src="static/images/infinity.png" class="logo" />
+    </div>
+    <div class="title">
+      <h1>Welcome {{data[0]}} {{data[1]}}</h1>
+    </div>
+  </body>
 </html>
