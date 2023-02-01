@@ -4,19 +4,24 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/static/images/Infinity.png" />
+
     <title>Document</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='login_register_style.css') }}"
     />
   </head>
+
   <body>
+    <img class="bgimg" src="static/images/houseee.avif" />
+
     <form action="/login" method="post">
       <img src="static/images/infinity.png" class="logo" />
       <br />
-      <input type="email" placeholder="Email address" name="email" />
+      <input type="email" placeholder="Email address" name="email" required />
       <br />
-      <input type="password" placeholder="Password" name="password" />
+      <input type="password" placeholder="Password" name="password" required />
       <br />
       {% if error %}
       <p class="error-message">{{error}}</p>
