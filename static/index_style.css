@@ -22,6 +22,10 @@
     padding-top: 20px;
 }
 
+body {
+    margin-bottom: 100px;
+}
+
 
 
 .logo {
@@ -31,6 +35,35 @@
     left: 0;
     padding-left: 10px;
 }
+
+
+
+.currentTemp p {
+    display: inline-block;
+    margin: auto;
+}
+
+
+.currentTemp p.small {
+    vertical-align: top;
+    line-height: 40px;
+}
+
+.currentTemp p.large {
+    font-size: 100px;
+    margin: auto;
+}
+
+
+.currentTemp {
+    width: 100%;
+    margin: auto;
+    text-align: center;
+    margin-top: 200px;
+    margin-bottom: 100px;
+
+}
+
 
 
 
@@ -90,4 +123,11 @@
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
 .show {
     display: block;
+}
+
+.myChart {
+    margin: auto;
+    width: 100%;
+    max-width: 800px;
+
 }

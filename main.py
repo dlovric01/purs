@@ -23,14 +23,28 @@ def index():
     print(session)
 
     if 'username' in session:
-
         cursor = mysql.connection.cursor()
-        query = f'SELECT firstName, lastName FROM users WHERE email = %s'
+        query = f'SELECT firstName, lastName FROM users WHERE email = %s;'
         cursor.execute(query, (session['username'],))
         data = cursor.fetchone()
-        data1 = cursor.fetchall()
 
-        return render_template('index.html', data=data)
+        query = f'SELECT DATE_FORMAT(date_time,"%hh:%mm"),value FROM temperature;'
+        cursor.execute(query)
+        tempData = cursor.fetchall()
+        temperatures = []
+        dates = []
+        query = f'SELECT value FROM temperature ORDER BY id DESC LIMIT 1;'
+        cursor.execute(query)
+        lastTemp = cursor.fetchone()[0]
+
+        for temp in tempData:
+            temperatures.append(temp[1])
+            dates.append(temp[0])
+        mysql.connection.commit()
+        cursor.close()
+        print(lastTemp)
+
+        return render_template('index.html', data=data, temperatures=temperatures, dates=dates, lastTemp=lastTemp)
 
     return redirect(url_for('login')), 303
 

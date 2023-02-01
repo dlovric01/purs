@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <link rel="icon" href="/static/images/Infinity.png" />
     <meta charset="UTF-8" />
     <title>Ad infinitum</title>
@@ -26,7 +27,62 @@
       <img class="logo" src="static/images/infinity.png" class="logo" />
     </div>
     <div class="title">
-      <h1>Welcome {{data[0]}} {{data[1]}}</h1>
+      <h2>Welcome {{data[0]}} {{data[1]}}</h2>
     </div>
+    <div class="currentTemp">
+      <p class="large">{{lastTemp}}</p>
+      <p class="small">°C</p>
+    </div>
+    <canvas class="myChart" id="myChart"></canvas>
+
+    <script>
+      var temperaturesData = "{{temperatures}}"
+        .split("[")
+        .join("")
+        .split("]")
+        .join("")
+        .replaceAll("'", "");
+      var datesData = "{{dates|safe}}"
+        .split("[")
+        .join("")
+        .split("]")
+        .join("")
+        .replaceAll("'", "");
+
+      var temperatures = temperaturesData.split(",");
+      var dates = datesData.split(",");
+      console.log(temperatures);
+      console.log(dates);
+      var xValues = [];
+      var yValues = [];
+      for (let index = 0; index < temperatures.length; index++) {
+        xValues.push(temperatures[index]);
+        yValues.push(dates[index]);
+      }
+
+      new Chart("myChart", {
+        type: "line",
+        data: {
+          labels: yValues,
+          datasets: [
+            {
+              fill: false,
+              lineTension: 0,
+              backgroundColor: "rgba(0,0,255,1.0)",
+              borderColor: "rgba(0,0,255,0.1)",
+              data: xValues,
+            },
+          ],
+        },
+        options: {
+          legend: { display: false },
+          scales: {
+            yAxes: [
+              { ticks: { min: 0, max: parseFloat("{{lastTemp}}") + 20 } },
+            ],
+          },
+        },
+      });
+    </script>
   </body>
 </html>
