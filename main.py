@@ -28,7 +28,7 @@ def index():
         cursor.execute(query, (session['username'],))
         data = cursor.fetchone()
 
-        query = f'SELECT DATE_FORMAT(date_time,"%hh:%mm"),value FROM temperature;'
+        query = f'SELECT DATE_FORMAT(date_time,"%hh:%mm"),value FROM temperature ORDER BY id DESC LIMIT 20;'
         cursor.execute(query)
         tempData = cursor.fetchall()
         temperatures = []

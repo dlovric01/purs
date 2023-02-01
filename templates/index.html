@@ -12,11 +12,13 @@
     />
   </head>
   <body>
+    <img class="bgimg" src="static/images/houseee.avif" />
+
     <div class="appbar">
       <div>
         <img class="logo" src="static/images/infinity.png" class="logo" />
+        <div class="welcome-title">{{data[0]}} {{data[1]}}</div>
       </div>
-      <div class="welcome-title">Welcome {{data[0]}} {{data[1]}}</div>
       <div class="dropdown">
         <img
           onclick="myFunction()"
@@ -28,13 +30,13 @@
         </div>
       </div>
     </div>
+
     <div class="currentTemp">
       <p class="large">{{lastTemp}}</p>
       <p class="small">°C</p>
     </div>
 
     <canvas class="myChart" id="myChart"></canvas>
-
     <script>
       var temperaturesData = "{{temperatures}}"
         .split("[")
@@ -55,7 +57,7 @@
       console.log(dates);
       var xValues = [];
       var yValues = [];
-      for (let index = 0; index < temperatures.length; index++) {
+      for (let index = temperatures.length - 1; index > 0; index--) {
         xValues.push(temperatures[index]);
         yValues.push(dates[index]);
       }
