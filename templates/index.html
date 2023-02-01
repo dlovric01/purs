@@ -12,27 +12,27 @@
     />
   </head>
   <body>
-    <div class="dropdown">
-      <img
-        onclick="myFunction()"
-        class="dropbtn"
-        src="/static/images/ios-arrow-down.png"
-        alt=""
-      />
-      <div id="myDropdown" class="dropdown-content">
-        <a href="/logout">Logout</a>
+    <div class="appbar">
+      <div>
+        <img class="logo" src="static/images/infinity.png" class="logo" />
       </div>
-    </div>
-    <div class="nameWithLogo">
-      <img class="logo" src="static/images/infinity.png" class="logo" />
-    </div>
-    <div class="title">
-      <h2>Welcome {{data[0]}} {{data[1]}}</h2>
+      <div class="welcome-title">Welcome {{data[0]}} {{data[1]}}</div>
+      <div class="dropdown">
+        <img
+          onclick="myFunction()"
+          class="logout-btn"
+          src="/static/images/ios-arrow-down.png"
+        />
+        <div id="myDropdown" class="dropdown-content">
+          <a href="/logout">Logout</a>
+        </div>
+      </div>
     </div>
     <div class="currentTemp">
       <p class="large">{{lastTemp}}</p>
       <p class="small">°C</p>
     </div>
+
     <canvas class="myChart" id="myChart"></canvas>
 
     <script>
