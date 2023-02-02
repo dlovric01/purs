@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
+from functions import passData
 
 from hashlib import sha256
 
@@ -16,13 +17,16 @@ app.config['MYSQL_DB'] = 'baza'
 # access database
 mysql = MySQL(app)
 
-
+print(passData())
 # starting page with temperature data
+
+
 @app.route('/', methods=['GET'])
 def index():
     print(session)
 
     if 'username' in session:
+
         cursor = mysql.connection.cursor()
         query = f'SELECT firstName, lastName FROM users WHERE email = %s;'
         cursor.execute(query, (session['username'],))
@@ -42,7 +46,6 @@ def index():
             dates.append(temp[0])
         mysql.connection.commit()
         cursor.close()
-        print(lastTemp)
 
         return render_template('index.html', data=data, temperatures=temperatures, dates=dates, lastTemp=lastTemp)
 
@@ -108,5 +111,12 @@ def logout():
     return redirect(url_for('index')), 303
 
 
+@app.route("/sensortmp", methods=["POST"])
+def receive_message():
+    tmp = request.form.get("temperature")
+    print("Received message:", tmp)
+    return "Message received successfully", 200
+
+
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=80)

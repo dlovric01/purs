@@ -1,0 +1,2 @@
+def passData():
+    return "Hello"
