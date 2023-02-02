@@ -111,11 +111,14 @@ def logout():
     return redirect(url_for('index')), 303
 
 
-@app.route("/sensortmp", methods=["POST"])
-def receive_message():
-    tmp = request.form.get("temperature")
-    print("Received message:", tmp)
-    return "Message received successfully", 200
+@app.route('/send-value')
+def recieve_value():
+    value = request.args.get("value")
+    if value:
+        temp = float(value)
+        print('Recieved value:', temp)
+
+    return 'Value recieved'
 
 
 if __name__ == '__main__':
