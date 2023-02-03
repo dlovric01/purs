@@ -62,3 +62,38 @@ def checkDBforUser(mysql, request, sha256):
     cursor.close()
 
     return user, email
+
+
+def getAllUsers(mysql):
+    cursor = mysql.connection.cursor()
+    query = f'SELECT firstName,lastName,email,role FROM users;'
+    cursor.execute(query)
+    data = cursor.fetchall()
+    users = []
+    for row in data:
+        users.append({
+            'firstName': row[0],
+            'lastName': row[1],
+            'email': row[2],
+            'role': row[3]
+        })
+
+    mysql.connection.commit()
+    cursor.close()
+
+    return users
+
+
+def getUser(mysql, session):
+    cursor = mysql.connection.cursor()
+    query = f'SELECT firstName,lastName,email,role FROM users WHERE email = %s;'
+    cursor.execute(query, ({session["username"]},))
+    response = cursor.fetchone()
+    user = ({
+        'firstName': response[0],
+        'lastName': response[1],
+        'email': response[2],
+        'role': response[3],
+    })
+
+    return user

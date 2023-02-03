@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <link rel="icon" href="/static/images/Infinity.png" />
+    <link rel="stylesheet" href="/static/register/register.css">
+    <link rel="stylesheet" href="/static/index/index.css">
+    <meta charset="UTF-8" />
+    <title>Ad infinitum</title>
+    <script src="/static/index/index.js"></script>
+    
+  </head>
+  <body>
+    <img class="bgimg" src="static/images/houseee.avif" />
+
+    <div class="appbar">
+      <div>
+     <a href="/">   <img class="logo" src="static/images/infinity.png" class="logo" /></a>
+        <div class="welcome-title">{{data[0]}} {{data[1]}}</div>
+      </div>
+      <div class="dropdown">
+        <img
+          onclick="myFunction()"
+          class="logout-btn"
+          src="/static/images/ios-arrow-down.png"
+        />
+        <div class="dropdown-content">
+          <a class="registerButton" href="/register-another-user">Register another user</a>
+          <a class="logoutButton" href="/logout">Logout</a>
+        </div>
+      </div>
+    </div>
+      
+    </div>
+    <h2 style="text-align:center;">List of registered users and admins</h2>
+
+    <table >
+        <tbody>
+      <tr>
+           <th>First name</th>
+           <th>Last name</th>
+           <th>Email</th>
+           <th>Role</th>
+         </tr>
+         {% for user in users %}
+         <tr>
+            <td>{{ user.firstName }}</td> 
+            <td>{{ user.lastName }}</td> 
+            <td>{{ user.email }}</td> 
+            <td>{{ user.role }}</td> 
+         </tr>
+         {% endfor %}
+ 
+        </tbody>
+       </table>
+       <h2 style="text-align:center;margin-bottom: 0;">{{users.role}}</h2>
+
+
+
+       <h2 style="text-align:center;margin-bottom: 0;">Register another user or admin</h2>
+       <br>
+       
+       <form action="/register-another-user" method="post">
+        <img src="static/images/infinity.png" class="logo" />
+        <br />
+        <input
+          type="firstName"
+          placeholder="First name"
+          name="firstName"
+          required
+        />
+        <br />
+        <input type="lastName" placeholder="Last name" name="lastName" required />
+        <br />
+        <input type="email" placeholder="Email address" name="email" required />
+        <br />
+        <input type="password" placeholder="Password" name="password" required />
+        <br />
+        
+        <label for="role">Choose role:</label>
+        <select id="role" name="role" >
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+        <br />
+        <br>
+
+        {% if error %}
+        <p class="error-message">{{error}}</p>
+        {% endif %}
+        <button class="loginButton">Register</button>
+       
+      </form>
+      
+     
+      </script>
+
+    </body>
+  </body>
+</html>

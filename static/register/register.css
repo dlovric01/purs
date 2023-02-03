@@ -1,0 +1,133 @@
+#usersBox {
+    display: none;
+    margin: auto;
+    width: 400px;
+}
+
+.list-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: lightgray;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 800px;
+    margin: auto;
+    right: 0;
+    left: 0;
+    background-color: white;
+    margin-bottom: 100px;
+}
+
+td,
+th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 20px;
+}
+
+tr:nth-child(even) {
+    background-color: whitesmoke;
+}
+
+form {
+    background-color: white;
+    opacity: 0.95;
+    width: 40rem;
+    border-radius: 1.5rem;
+    text-align: center;
+    align-items: center;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+
+input {
+    margin: 0.3rem;
+}
+
+a.register-button {
+    font-size: medium;
+    display: inline-block;
+    padding: 5px 10px;
+    width: 80px;
+    text-decoration: none;
+    color: #fff;
+    background-color: black;
+    border-radius: 20px;
+    margin: 10px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+a.register-button:hover {
+    background-color: #333;
+}
+
+input[type="email"],
+[type="password"],
+[type="firstName"],
+[type="lastName"],
+[name='role'] {
+
+    border: 0.1rem solid rgb(220, 215, 215);
+    padding: 0.5rem;
+    border-radius: 0.6rem;
+    width: 12rem;
+    transition: box-shadow 0.5s;
+}
+
+[name='role'] {
+    width: 100px;
+    margin-top: 5px;
+    margin-left: 5px;
+    text-align: center;
+}
+
+input[type="email"]:focus,
+[type="password"]:focus,
+[type="firstName"]:focus,
+[type="lastName"]:focus,
+[name='role']:focus {
+    box-shadow: 0 0 0 0.15rem rgba(24, 117, 255, 0.25);
+    border: 0.1rem solid rgb(24, 117, 255, 0.25);
+    outline: 0;
+}
+
+input[type="email"]:hover,
+[type="password"]:hover,
+[type="firstName"]:hover,
+[type="lastName"]:hover,
+[name='role']:hover {
+    border: 0.1rem solid rgb(24, 117, 255, 0.25);
+    outline: 0;
+}
+
+.loginButton {
+    display: inline-block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #fff;
+    background-color: black;
+    border-radius: 20px;
+    margin: 10px;
+    width: 150px;
+    font-size: medium;
+    margin-bottom: 50px;
+
+}
+
+.loginButton:hover {
+    background-color: #333;
+}
+
+.error-message {
+    color: red;
+}
+
+.error-message {
+    font-size: small;
+}
