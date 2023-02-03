@@ -3,20 +3,18 @@
   <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <link rel="icon" href="/static/images/Infinity.png" />
+    <link rel="stylesheet" href="/static/index/index.css">
     <meta charset="UTF-8" />
     <title>Ad infinitum</title>
-    <script src="/static/index.js"></script>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='index_style.css') }}"
-    />
+    <script src="/static/index/index.js"></script>
+    
   </head>
   <body>
     <img class="bgimg" src="static/images/houseee.avif" />
 
     <div class="appbar">
       <div>
-        <img class="logo" src="static/images/infinity.png" class="logo" />
+     <a href="/"><img class="logo" src="static/images/infinity.png" class="logo" /></a>
         <div class="welcome-title">{{data[0]}} {{data[1]}}</div>
       </div>
       <div class="dropdown">
@@ -26,7 +24,9 @@
           src="/static/images/ios-arrow-down.png"
         />
         <div class="dropdown-content">
-          <a class="registerButton" href="">Register another user</a>
+          {% if user.role == "admin" %}
+          <a class="registerButton" href="/register-another-user">Register another user</a>
+          {% endif %}
           <a class="logoutButton" href="/logout">Logout</a>
         </div>
       </div>
@@ -38,10 +38,9 @@
       <br>
       <p >Living room</p>
     </div>
-    
-
     <canvas class="myChart" id="myChart"></canvas>
     <script>
+      
       var temperatures = [];
       var dummySecondSensorTemperatures = []
       var dates = [];
@@ -61,7 +60,6 @@
         .replaceAll('m',':')
         .replaceAll('s','')
         .split(',');
-      
       for (let index = dbTemps.length - 1; index > 0; index--) {
           temperatures.push(dbTemps[index]);
           dates.push(dbDates[index]);

@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
-from functions import storeTemperature, getTemperatureData, getLastTempFromDB, checkDBforUser
+from functions import storeTemperature, getTemperatureData, getLastTempFromDB, checkDBforUser, getAllUsers, getUser
 
 from hashlib import sha256
 
@@ -25,7 +25,8 @@ def index():
     if 'username' in session:
         data, temperatures, dates, lastTemp = getTemperatureData(
             mysql, session)
-        return render_template('index.html', data=data, temperatures=temperatures, dates=dates, lastTemp=lastTemp)
+        user = getUser(mysql, session)
+        return render_template('index.html', data=data, temperatures=temperatures, dates=dates, lastTemp=lastTemp, user=user)
 
     return redirect(url_for('login')), 303
 
@@ -46,32 +47,38 @@ def login():
 
 
 # registration page
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/register-another-user', methods=['GET', 'POST'])
 def registracija():
+
     if request.method == 'GET':
-        return render_template('register.html')
+        data, _, _, _ = getTemperatureData(
+            mysql, session)
+        users = getAllUsers(mysql)
+        return render_template('register_another_user.html', data=data,  users=users)
     elif request.method == 'POST':
         cursor = mysql.connection.cursor()
         firstName = request.form.get('firstName')
         lastName = request.form.get('lastName')
         email = request.form.get('email')
         password = request.form.get('password')
-        query = "SELECT * FROM users WHERE email = %s"
-        cursor.execute(query, (email,))
-        user = cursor.fetchone()
+        role = request.form.get('role')
+        user = getUser(mysql, session)
 
         if user:
             # User already exists
-            return render_template('register.html', error='This email is already in use')
+            return render_template('register_another_user.html', error='This email is already in use')
         else:
 
-            session['username'] = email
             # Insert the new user into the database
-            query = "INSERT INTO users (firstName, lastName, email, password) VALUES (%s, %s, %s, UNHEX(SHA2(%s, 256)))"
-            cursor.execute(query, (firstName, lastName, email, password,))
+            query = "INSERT INTO users (firstName, lastName, email, password,role) VALUES (%s, %s, %s, UNHEX(SHA2(%s, 256)),%s)"
+            cursor.execute(
+                query, (firstName, lastName, email, password, role,))
             mysql.connection.commit()
             cursor.close()
-            return redirect(url_for('index')), 303
+            data, _, _, _ = getTemperatureData(
+                mysql, session)
+            users = getAllUsers(mysql)
+            return render_template('register_another_user.html', data=data,  users=users, user=user), 303
 
 
 @app.route('/logout', methods=['GET'])
