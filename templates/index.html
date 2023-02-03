@@ -25,87 +25,122 @@
           class="logout-btn"
           src="/static/images/ios-arrow-down.png"
         />
-        <div id="myDropdown" class="dropdown-content">
-          <a href="/logout">Logout</a>
+        <div class="dropdown-content">
+          <a class="registerButton" href="">Register another user</a>
+          <a class="logoutButton" href="/logout">Logout</a>
         </div>
       </div>
     </div>
 
     <div class="currentTemp">
-      <p class="large" id="temperature"></p>
+      <p class="large" id="temperature">{{lastTemp}}</p>
       <p class="small">°C</p>
+      <br>
+      <p >Living room</p>
     </div>
+    
 
     <canvas class="myChart" id="myChart"></canvas>
     <script>
-      var temperaturesData = "{{temperatures}}"
+      var temperatures = [];
+      var dummySecondSensorTemperatures = []
+      var dates = [];
+      dbTemps = "{{temperatures}}"
         .split("[")
         .join("")
         .split("]")
         .join("")
-        .replaceAll("'", "");
-      var datesData = "{{dates|safe}}"
+        .replaceAll("'", "").split(',');
+        dbDates = "{{dates|safe}}"
         .split("[")
         .join("")
         .split("]")
         .join("")
-        .replaceAll("'", "");
-
-      var temperatures = temperaturesData.split(",");
-      var dates = datesData.split(",");
-      console.log(temperatures);
-      console.log(dates);
-      var xValues = [];
-      var yValues = [];
-      for (let index = temperatures.length - 1; index > 0; index--) {
-        xValues.push(temperatures[index]);
-        yValues.push(dates[index]);
+        .replaceAll("'", "")
+        .replaceAll('h','')
+        .replaceAll('m',':')
+        .replaceAll('s','')
+        .split(',');
+      
+      for (let index = dbTemps.length - 1; index > 0; index--) {
+          temperatures.push(dbTemps[index]);
+          dates.push(dbDates[index]);
+          dummySecondSensorTemperatures.push(dbTemps[index]-15);
       }
 
-      new Chart("myChart", {
+      
+
+    var myChart =  new Chart(document.getElementById("myChart").getContext("2d"), {
         type: "line",
         data: {
-          labels: yValues,
+          labels: dates,
           datasets: [
             {
-              fill: false,
-              lineTension: 0,
-              backgroundColor: "rgba(0,0,255,1.0)",
-              borderColor: "rgba(0,0,255,0.1)",
-              data: xValues,
+              label: 'Living room (°C)',
+
+              backgroundColor: [
+              'rgba(255, 99, 132, 0)'
+            ],
+            borderColor: [
+              'rgba(255,99,132,1)'
+            ],
+              data: temperatures,
+              
+            },
+            {
+              label: 'Basement (°C)',
+
+              backgroundColor: [
+              'rgba(255, 255, 255, 0)'
+            ],
+            borderColor: [
+              'rgba(0,0,132,1)'
+            ],
+              data: dummySecondSensorTemperatures,
+              
             },
           ],
         },
         options: {
-          legend: { display: false },
           scales: {
             yAxes: [
               {
                 ticks: {
-                  min: parseFloat("{{lastTemp}}") - 5,
-                  max: parseFloat("{{lastTemp}}") + 5,
+                  min: 0,
+                  max: parseFloat("{{lastTemp}}") + 15,
                 },
               },
             ],
           },
+          elements: {
+            point: {
+                radius: 2
+            }
+        }
         },
       });
-    </script>
-    <script>
-      function updateTemperature() {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
-          if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("temperature").innerHTML =
+      setInterval(function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/update_temperature", true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+        temperatures.push(parseFloat(this.responseText));
+        dummySecondSensorTemperatures.push(parseFloat(this.responseText)-15);
+        dates.push(new Date().toLocaleTimeString());
+        document.getElementById("temperature").innerHTML =
               this.responseText;
-          }
-        };
-        xhttp.open("GET", "/update_temperature", true);
-        xhttp.send();
+        if (temperatures.length > 20) {
+              temperatures.shift();
+              dates.shift();
+              dummySecondSensorTemperatures.shift();
+            }
+        myChart.update();
       }
-      setInterval(updateTemperature, 1000);
-    </script>
-      
+    };
+    xhr.send();
+  }, 5000);
+   </script>
+    
     </body>
   </body>
 </html>

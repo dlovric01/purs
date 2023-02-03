@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
-from functions import storeTemperature, getTemperatureData
+from functions import storeTemperature, getTemperatureData, getLastTempFromDB, checkDBforUser
 
 from hashlib import sha256
 
@@ -22,30 +22,9 @@ mysql = MySQL(app)
 
 @app.route('/', methods=['GET'])
 def index():
-    print(session)
-
     if 'username' in session:
-
-        cursor = mysql.connection.cursor()
-        query = f'SELECT firstName, lastName FROM users WHERE email = %s;'
-        cursor.execute(query, (session['username'],))
-        data = cursor.fetchone()
-
-        query = f'SELECT DATE_FORMAT(date_time,"%hh:%mm"),value FROM temperature ORDER BY id DESC LIMIT 20;'
-        cursor.execute(query)
-        tempData = cursor.fetchall()
-        temperatures = []
-        dates = []
-        query = f'SELECT value FROM temperature ORDER BY id DESC LIMIT 1;'
-        cursor.execute(query)
-        lastTemp = cursor.fetchone()[0]
-
-        for temp in tempData:
-            temperatures.append(temp[1])
-            dates.append(temp[0])
-        mysql.connection.commit()
-        cursor.close()
-
+        data, temperatures, dates, lastTemp = getTemperatureData(
+            mysql, session)
         return render_template('index.html', data=data, temperatures=temperatures, dates=dates, lastTemp=lastTemp)
 
     return redirect(url_for('login')), 303
@@ -57,15 +36,7 @@ def login():
     if request.method == 'GET':
         return render_template('login.html')
     elif request.method == 'POST':
-        cursor = mysql.connection.cursor()
-        email = request.form.get('email')
-        password = sha256(request.form.get('password').encode()).hexdigest()
-        query = f"SELECT * FROM users WHERE HEX(password) = %s AND email = %s"
-        cursor.execute(query, (password, email,))
-
-        user = cursor.fetchone()
-        mysql.connection.commit()
-        cursor.close()
+        user, email = checkDBforUser(mysql, request, sha256)
         if user:
             # user is valid to login
             session['username'] = email
@@ -81,7 +52,6 @@ def registracija():
         return render_template('register.html')
     elif request.method == 'POST':
         cursor = mysql.connection.cursor()
-
         firstName = request.form.get('firstName')
         lastName = request.form.get('lastName')
         email = request.form.get('email')
@@ -121,12 +91,7 @@ def receive_value():
 
 @app.route('/update_temperature')
 def update_temperature():
-    cursor = mysql.connection.cursor()
-    query = f'SELECT value FROM temperature ORDER BY id DESC LIMIT 1;'
-    cursor.execute(query)
-    temperature = cursor.fetchone()[0]
-    mysql.connection.commit()
-    cursor.close()
+    temperature = getLastTempFromDB(mysql)
     return str(temperature)
 
 
