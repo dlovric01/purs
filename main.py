@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
-from functions import passData
+from functions import storeTemperature, getTemperatureData
 
 from hashlib import sha256
 
@@ -17,7 +17,6 @@ app.config['MYSQL_DB'] = 'baza'
 # access database
 mysql = MySQL(app)
 
-print(passData())
 # starting page with temperature data
 
 
@@ -111,14 +110,24 @@ def logout():
     return redirect(url_for('index')), 303
 
 
-@app.route('/send-value')
-def recieve_value():
+@app.route("/send-value")
+def receive_value():
     value = request.args.get("value")
     if value:
-        temp = float(value)
-        print('Recieved value:', temp)
+        storeTemperature(mysql, value)
+        return 'Value stored'
+    return 'Value not recieved'
 
-    return 'Value recieved'
+
+@app.route('/update_temperature')
+def update_temperature():
+    cursor = mysql.connection.cursor()
+    query = f'SELECT value FROM temperature ORDER BY id DESC LIMIT 1;'
+    cursor.execute(query)
+    temperature = cursor.fetchone()[0]
+    mysql.connection.commit()
+    cursor.close()
+    return str(temperature)
 
 
 if __name__ == '__main__':

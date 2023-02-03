@@ -32,7 +32,7 @@
     </div>
 
     <div class="currentTemp">
-      <p class="large">{{lastTemp}}</p>
+      <p class="large" id="temperature"></p>
       <p class="small">°C</p>
     </div>
 
@@ -80,11 +80,32 @@
           legend: { display: false },
           scales: {
             yAxes: [
-              { ticks: { min: 0, max: parseFloat("{{lastTemp}}") + 20 } },
+              {
+                ticks: {
+                  min: parseFloat("{{lastTemp}}") - 5,
+                  max: parseFloat("{{lastTemp}}") + 5,
+                },
+              },
             ],
           },
         },
       });
     </script>
+    <script>
+      function updateTemperature() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("temperature").innerHTML =
+              this.responseText;
+          }
+        };
+        xhttp.open("GET", "/update_temperature", true);
+        xhttp.send();
+      }
+      setInterval(updateTemperature, 1000);
+    </script>
+      
+    </body>
   </body>
 </html>

@@ -59,11 +59,13 @@ void loop()
     Serial.println();
 
     String url = "/send-value?value=" + String(temp);
+
     if (!client.connect(host, httpPort))
     {
       Serial.println("Connection failed");
       return;
     }
+
     client.print(String("GET ") + url + " HTTP/1.1\r\n" +
                  "Host: " + host + "\r\n" +
                  "Connection: close\r\n\r\n");
@@ -77,7 +79,6 @@ void loop()
     Serial.println();
     Serial.println("Closing connection");
     client.stop();
-
     delay(5000);
   }
   else
