@@ -14,8 +14,8 @@
 
     <div class="appbar">
       <div>
-     <a href="/"><img class="logo" src="static/images/infinity.png" class="logo" /></a>
-        <div class="welcome-title">{{data[0]}} {{data[1]}}</div>
+     <img class="logo" src="static/images/infinity.png" class="logo" />
+        <div class="welcome-title">{{user.firstName}} {{user.lastName}}</div>
       </div>
       <div class="dropdown">
         <img
@@ -32,25 +32,48 @@
       </div>
     </div>
 
-    <div class="currentTemp">
-      <p class="large" id="temperature">{{lastTemp}}</p>
-      <p class="small">°C</p>
-      <br>
-      <p >Living room</p>
+    
+
+    <div class="parent1" >
+      <div class="loader" id="loader1"></div>
+      <div class="errorSensorNotConnected" id="errorSensorNotConnected1">Sensor not connected</div>
+      <div class="row" id="temp1">
+        <div class="temp" id="temperature1"></div>
+        <div class="c">°C</div>
+      </div>
+      <div class="room" > Living room</div>
     </div>
-    <canvas class="myChart" id="myChart"></canvas>
+
+    <div class="parent2" >
+      <div class="loader" id="loader2"></div>
+      <div class="errorSensorNotConnected" id="errorSensorNotConnected2">Sensor not connected</div>
+      <div class="row" id="temp2">
+        <div class="temp" id="temperature2"></div>
+        <div class="c">°C</div>
+      </div>
+      <div class="room"> Basement</div>
+    </div>
+    
+    <div class="myChartsRow">
+      <canvas class="myChart1" id="myChart1"></canvas>
+       <canvas class="myChart1" id="myChart2"></canvas>
+    </div>
+    
+
     <script>
       
-      var temperatures = [];
-      var dummySecondSensorTemperatures = []
-      var dates = [];
-      dbTemps = "{{temperatures}}"
+      var temperatures1 = [];
+      var temperatures2 = []
+      var dates1 = [];
+      var dates2 = [];
+
+        dbTemps1 = "{{temperatures1}}"
         .split("[")
         .join("")
         .split("]")
         .join("")
         .replaceAll("'", "").split(',');
-        dbDates = "{{dates|safe}}"
+        dbDates1 = "{{dates1|safe}}"
         .split("[")
         .join("")
         .split("]")
@@ -60,18 +83,42 @@
         .replaceAll('m',':')
         .replaceAll('s','')
         .split(',');
-      for (let index = dbTemps.length - 1; index > 0; index--) {
-          temperatures.push(dbTemps[index]);
-          dates.push(dbDates[index]);
-          dummySecondSensorTemperatures.push(dbTemps[index]-15);
+        dbTemps2 = "{{temperatures2}}"
+        .split("[")
+        .join("")
+        .split("]")
+        .join("")
+        .replaceAll("'", "").split(',');
+        dbDates2 = "{{dates2|safe}}"
+        .split("[")
+        .join("")
+        .split("]")
+        .join("")
+        .replaceAll("'", "")
+        .replaceAll('h','')
+        .replaceAll('m',':')
+        .replaceAll('s','')
+        .split(',');
+
+      for (let index = 0; index < dbTemps1.length; index++) {
+          temperatures1.push(dbTemps1[index]);
+          dates1.push(dbDates1[index]);
+      }
+      for (let index = 0; index < dbTemps2.length; index++) {
+          temperatures2.push(dbTemps2[index]);
+          dates2.push(dbDates2[index]);
       }
 
-      
+      temperatures1 = temperatures1.reverse();
+      dates1 = dates1.reverse();
+      temperatures2 = temperatures2.reverse();
+      dates2 = dates2.reverse();
 
-    var myChart =  new Chart(document.getElementById("myChart").getContext("2d"), {
+
+    var myChart1 =  new Chart(document.getElementById("myChart1").getContext("2d"), {
         type: "line",
         data: {
-          labels: dates,
+          labels: dates1,
           datasets: [
             {
               label: 'Living room (°C)',
@@ -82,19 +129,7 @@
             borderColor: [
               'rgba(255,99,132,1)'
             ],
-              data: temperatures,
-              
-            },
-            {
-              label: 'Basement (°C)',
-
-              backgroundColor: [
-              'rgba(255, 255, 255, 0)'
-            ],
-            borderColor: [
-              'rgba(0,0,132,1)'
-            ],
-              data: dummySecondSensorTemperatures,
+              data: temperatures1,
               
             },
           ],
@@ -105,7 +140,45 @@
               {
                 ticks: {
                   min: 0,
-                  max: parseFloat("{{lastTemp}}") + 15,
+                  max: 40,
+                },
+              },
+            ],
+          },
+          elements: {
+            point: {
+                radius: 2
+            }
+        }
+        },
+      });
+
+      var myChart2 =  new Chart(document.getElementById("myChart2").getContext("2d"), {
+        type: "line",
+        data: {
+          labels: dates2,
+          datasets: [
+            {
+              label: 'Basement (°C)',
+
+              backgroundColor: [
+              'rgba(255, 255, 255, 0)'
+            ],
+            borderColor: [
+              'rgba(0,0,132,1)'
+            ],
+              data: temperatures2,
+              
+            },
+          ],
+        },
+        options: {
+          scales: {
+            yAxes: [
+              {
+                ticks: {
+                  min: 0,
+                  max: 40,
                 },
               },
             ],
@@ -118,25 +191,68 @@
         },
       });
       setInterval(function() {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/update_temperature", true);
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-        temperatures.push(parseFloat(this.responseText));
-        dummySecondSensorTemperatures.push(parseFloat(this.responseText)-15);
-        dates.push(new Date().toLocaleTimeString());
-        document.getElementById("temperature").innerHTML =
-              this.responseText;
-        if (temperatures.length > 20) {
-              temperatures.shift();
-              dates.shift();
-              dummySecondSensorTemperatures.shift();
-            }
-        myChart.update();
-      }
-    };
-    xhr.send();
-  }, 5000);
+
+        // get first temperature
+              var xhr = new XMLHttpRequest();
+              xhr.open("GET", "/get_current_temperature1", true);
+              xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+
+                  if(this.responseText == 'Sensor not connected') {
+                    document.getElementById("loader1").style.display ="none";
+                    document.getElementById("errorSensorNotConnected1").style.display ="flex";
+                    document.getElementById("temp1").style.display ="none";
+                  } else {
+                  temperatures1.push(parseFloat(this.responseText));
+                  dates1.push(new Date().toLocaleTimeString());
+                  document.getElementById("temperature1").innerHTML =
+                        this.responseText;
+                  document.getElementById("loader1").style.display ="none";
+                  document.getElementById("errorSensorNotConnected1").style.display ="none";
+                  document.getElementById("temp1").style.display ="flex";
+                  }
+                  dates1.push(new Date().toLocaleTimeString());
+                  if(dates1.length >= 30) {
+                    temperatures1.shift();
+                    dates1.shift();
+                  }
+                  myChart1.update();
+                }
+              };
+              xhr.send();
+      }, 5000);
+
+      // getting second temperature
+      setInterval(function(){
+        var xhr = new XMLHttpRequest();
+                  xhr.open("GET", "/get_current_temperature2", true);
+                  xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+
+                      if(this.responseText == 'Sensor not connected') {
+                          document.getElementById("loader2").style.display ="none";
+                          document.getElementById("errorSensorNotConnected2").style.display ="flex";
+                          document.getElementById("temp2").style.display ="none";
+                      } else {
+                          temperatures2.push(parseFloat(this.responseText));
+
+                          document.getElementById("temperature2").innerHTML =
+                                this.responseText;
+                          document.getElementById("loader2").style.display ="none";
+                          document.getElementById("errorSensorNotConnected2").style.display ="none";
+                          document.getElementById("temp2").style.display ="flex";
+
+                      }
+                      dates2.push(new Date().toLocaleTimeString());
+                      if(dates2.length >= 30) {
+                        dates2.shift();
+                        temperatures2.shift();
+                      }
+                      myChart2.update();
+                    }
+                  };
+                  xhr.send();
+      },5000);
    </script>
     
     </body>

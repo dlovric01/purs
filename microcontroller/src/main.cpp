@@ -58,7 +58,7 @@ void loop()
     Serial.println(" *C");
     Serial.println();
 
-    String url = "/send-value?value=" + String(temp);
+    String url = "/send-temp1?value=" + String(temp);
 
     if (!client.connect(host, httpPort))
     {

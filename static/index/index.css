@@ -44,54 +44,123 @@ body {
 
 
 
-.currentTemp p {
-    display: inline-block;
-
-
-}
-
-
-.currentTemp p.small {
-    vertical-align: top;
-    line-height: 40px;
-}
-
-.currentTemp p.large {
-    font-size: 100px;
-    margin: auto;
-}
-
-
-.currentTemp {
-    width: 400px;
-    text-align: center;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+.parent1 {
     background-color: white;
     border-radius: 1.5rem;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    height: 200px;
+    display: flex;
+    position: absolute;
+    right: 500px;
+    left: 0;
     margin: auto;
+    top: 150px;
+    z-index: 1;
+    flex-direction: column;
+    align-items: center;
+
+}
+
+.parent2 {
+    background-color: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    height: 200px;
+    display: flex;
     position: absolute;
     right: 0;
-    left: 0;
-    top: 200px;
-    z-index: 1;
-
-
-}
-
-
-
-
-
-.myChart {
+    left: 500px;
     margin: auto;
-    width: 100%;
-    max-width: 800px;
-    margin-top: 50px;
-    background-color: white;
-    padding-top: 30px;
-    padding-right: 30px;
-    padding-bottom: 30px;
+    top: 150px;
+    z-index: 1;
+    flex-direction: column;
+    align-items: center;
+
 }
+
+.row {
+    display: none;
+    justify-content: center;
+    margin: auto;
+}
+
+.room {
+    display: flex;
+    padding: 20px;
+    font-weight: bold;
+}
+
+.temp {
+    font-size: 80px;
+    margin: auto;
+}
+
+.c {
+    vertical-align: top;
+    line-height: 40px;
+    padding-top: 5px;
+}
+
+.errorSensorNotConnected {
+    display: none;
+    font-size: 30px;
+    margin: auto;
+    color: red;
+}
+
+.errorLiveGraphNotAvailable {
+    display: none;
+    position: absolute;
+    margin: auto;
+    right: 0;
+    left: 0;
+    top: 500px;
+    color: red;
+    width: 100%;
+    font-size: 20px;
+    text-align: center;
+}
+
+.loader {
+    border: 5px solid #f3f3f3;
+    /* Light grey */
+    border-top: 5px solid black;
+    /* Blue */
+    border-radius: 50%;
+    margin: auto;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.myChartsRow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 100px;
+
+}
+
+
+.myChart1 {
+    border: 1px solid gainsboro;
+    max-width: 600px;
+    margin: 20px;
+    padding: 20px;
+}
+
 
 
 .appbar {

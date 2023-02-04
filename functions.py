@@ -1,54 +1,59 @@
-def getTemperatureData(mysql, session):
+
+
+def getTemperatureData(mysql, session, table):
     cursor = mysql.connection.cursor()
     query = f'SELECT firstName, lastName FROM users WHERE email = %s;'
     cursor.execute(query, (session['username'],))
     data = cursor.fetchone()
-    query = f'SELECT date_time,value FROM temperature ORDER BY id DESC LIMIT 30;'
+    query = f'SELECT date_time,value FROM {table} ORDER BY id DESC LIMIT 30;'
     cursor.execute(query)
     tempData = cursor.fetchall()
     temperatures = []
     dates = []
-    query = f'SELECT value FROM temperature ORDER BY id DESC LIMIT 1;'
-    cursor.execute(query)
-    lastTemp = cursor.fetchone()[0]
-
     for temp in tempData:
         temperatures.append(temp[1])
         dates.append((temp[0].strftime("%H:%M:%S")))
 
     mysql.connection.commit()
     cursor.close()
-    return data, temperatures, dates, lastTemp
+    return temperatures, dates
 
 
-def storeTemperature(mysql, value):
+def storeTemperature(mysql, value, table):
     temp = float(value)
     print('Recieved value:', temp)
     cursor = mysql.connection.cursor()
-    query = "INSERT INTO temperature (date_time, value) VALUES (NOW() , %s);"
+    query = f"INSERT INTO {table} (date_time, value) VALUES (NOW() , %s);"
     cursor.execute(query, (temp,))
 
     # starting to delete data from db after there are at least 30 temperatures
-    query = "SELECT * FROM temperature"
+    query = f"SELECT * FROM {table}"
     cursor.execute(query,)
     temperatures = cursor.fetchall()
     if len(temperatures) > 30:
-        query = "DELETE FROM temperature ORDER BY id ASC LIMIT 1;"
+        query = f"DELETE FROM {table} ORDER BY id ASC LIMIT 1;"
         cursor.execute(query,)
 
     mysql.connection.commit()
     cursor.close()
 
 
-def getLastTempFromDB(mysql):
+def getCurrentTemperature(mysql, dt, table):
     cursor = mysql.connection.cursor()
-    query = f'SELECT value FROM temperature ORDER BY id DESC LIMIT 1;'
+    query = f'SELECT value,date_time FROM {table} ORDER BY id DESC LIMIT 1;'
     cursor.execute(query)
-    temperature = cursor.fetchone()[0]
+    response = cursor.fetchone()
+    temperature = response[0]
+    lastDateFromDB = response[1]
+    dateNow = dt.datetime.now()
+
+    # compares date and if there are 10 seconds appart it means sensor is not working
+    isSensorConnected = compare_dates(lastDateFromDB, dateNow)
+
     mysql.connection.commit()
     cursor.close()
 
-    return temperature
+    return temperature, isSensorConnected
 
 
 def checkDBforUser(mysql, request, sha256):
@@ -97,3 +102,11 @@ def getUser(mysql, session):
     })
 
     return user
+
+
+def compare_dates(date1, date2):
+    if date2 > date1:
+        difference = date2 - date1
+        if difference.total_seconds() < 10:
+            return True
+    return False

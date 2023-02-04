@@ -106,7 +106,7 @@ input[type="email"]:hover,
     outline: 0;
 }
 
-.loginButton {
+.mainButton {
     display: inline-block;
     padding: 10px 20px;
     text-decoration: none;
@@ -120,7 +120,7 @@ input[type="email"]:hover,
 
 }
 
-.loginButton:hover {
+.mainButton:hover {
     background-color: #333;
 }
 
@@ -130,4 +130,8 @@ input[type="email"]:hover,
 
 .error-message {
     font-size: small;
+}
+
+.navigateBack:hover {
+    cursor: pointer;
 }

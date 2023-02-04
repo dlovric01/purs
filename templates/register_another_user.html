@@ -15,8 +15,8 @@
 
     <div class="appbar">
       <div>
-     <a href="/">   <img class="logo" src="static/images/infinity.png" class="logo" /></a>
-        <div class="welcome-title">{{data[0]}} {{data[1]}}</div>
+     <a href="/">   <img  class="logo" src="static/images/infinity.png" class="logo" /></a>
+        <div class="welcome-title">{{user.firstName}} {{user.lastName}}</div>
       </div>
       <div class="dropdown">
         <img
@@ -88,13 +88,10 @@
         {% if error %}
         <p class="error-message">{{error}}</p>
         {% endif %}
-        <button class="loginButton">Register</button>
+        <button class="mainButton">Register</button>
        
       </form>
-      
-     
       </script>
-
     </body>
   </body>
 </html>

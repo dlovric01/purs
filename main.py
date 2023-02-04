@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
-from functions import storeTemperature, getTemperatureData, getLastTempFromDB, checkDBforUser, getAllUsers, getUser
+from functions import storeTemperature, getTemperatureData, getCurrentTemperature, checkDBforUser, getAllUsers, getUser
 
 from hashlib import sha256
+import datetime as dt
+
 
 app = Flask(__name__)
 # define secret key for session
@@ -20,13 +22,15 @@ mysql = MySQL(app)
 # starting page with temperature data
 
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
     if 'username' in session:
-        data, temperatures, dates, lastTemp = getTemperatureData(
-            mysql, session)
+        temperatures1, dates1 = getTemperatureData(
+            mysql, session, table='temperature1')
+        temperatures2, dates2 = getTemperatureData(
+            mysql, session, table='temperature2')
         user = getUser(mysql, session)
-        return render_template('index.html', data=data, temperatures=temperatures, dates=dates, lastTemp=lastTemp, user=user)
+        return render_template('index.html', temperatures1=temperatures1, dates1=dates1, user=user, temperatures2=temperatures2, dates2=dates2)
 
     return redirect(url_for('login')), 303
 
@@ -49,12 +53,10 @@ def login():
 # registration page
 @app.route('/register-another-user', methods=['GET', 'POST'])
 def registracija():
-
+    user = getUser(mysql, session)
     if request.method == 'GET':
-        data, _, _, _ = getTemperatureData(
-            mysql, session)
         users = getAllUsers(mysql)
-        return render_template('register_another_user.html', data=data,  users=users)
+        return render_template('register_another_user.html',  users=users, user=user)
     elif request.method == 'POST':
         cursor = mysql.connection.cursor()
         firstName = request.form.get('firstName')
@@ -62,23 +64,22 @@ def registracija():
         email = request.form.get('email')
         password = request.form.get('password')
         role = request.form.get('role')
-        user = getUser(mysql, session)
-
-        if user:
+        cursor = mysql.connection.cursor()
+        query = f'SELECT email FROM users WHERE email = %s;'
+        cursor.execute(query, (email,))
+        isEmailAlreadyInDb = cursor.fetchone()
+        if isEmailAlreadyInDb:
             # User already exists
             return render_template('register_another_user.html', error='This email is already in use')
         else:
-
             # Insert the new user into the database
             query = "INSERT INTO users (firstName, lastName, email, password,role) VALUES (%s, %s, %s, UNHEX(SHA2(%s, 256)),%s)"
             cursor.execute(
                 query, (firstName, lastName, email, password, role,))
             mysql.connection.commit()
             cursor.close()
-            data, _, _, _ = getTemperatureData(
-                mysql, session)
             users = getAllUsers(mysql)
-            return render_template('register_another_user.html', data=data,  users=users, user=user), 303
+            return render_template('register_another_user.html', users=users, user=user), 303
 
 
 @app.route('/logout', methods=['GET'])
@@ -87,19 +88,44 @@ def logout():
     return redirect(url_for('index')), 303
 
 
-@app.route("/send-value")
-def receive_value():
+# sensor 1
+@app.route("/send-temp1")
+def receive_value1():
     value = request.args.get("value")
     if value:
-        storeTemperature(mysql, value)
+        storeTemperature(mysql, value, table='temperature1')
         return 'Value stored'
     return 'Value not recieved'
 
 
-@app.route('/update_temperature')
-def update_temperature():
-    temperature = getLastTempFromDB(mysql)
-    return str(temperature)
+# sensor 2
+@app.route("/send-temp2")
+def receive_value2():
+    value = request.args.get("value")
+    if value:
+        storeTemperature(mysql, value, table='temperature2')
+        return 'Value stored'
+    return 'Value not recieved'
+
+
+@app.route('/get_current_temperature1')
+def get_current_temperature1():
+    temperature1, isSensorConnected = getCurrentTemperature(
+        mysql, dt, table='temperature1')
+    if isSensorConnected:
+        return str(temperature1)
+    else:
+        return 'Sensor not connected'
+
+
+@app.route('/get_current_temperature2')
+def get_current_temperature2():
+    temperature2, isSensorConnected = getCurrentTemperature(
+        mysql, dt, table='temperature2')
+    if isSensorConnected:
+        return str(temperature2)
+    else:
+        return 'Sensor not connected'
 
 
 if __name__ == '__main__':
