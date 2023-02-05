@@ -43,7 +43,7 @@
           <div class="temp" id="temperature1"></div>
           <div class="c">°C</div>
         </div>
-        <div class="room">Living room</div>
+        <div class="room">House</div>
       </div>
 
       <div class="parent2">
@@ -60,7 +60,18 @@
       </div>
     </div>
 
-    <div class="monitorTemperature">
+    <div class="monitorTemperature" id="monitorTemperature">
+      <h3
+        style="
+          text-align: center;
+          margin: auto;
+          margin-top: 10px;
+          font-weight: bold;
+        "
+      >
+        House
+      </h3>
+
       <div class="monitorTemperatureRow">
         <div class="monitorTemperatureColumn">
           <h2>Fan</h2>
@@ -167,7 +178,7 @@
             labels: dates1,
             datasets: [
               {
-                label: "Living room (°C)",
+                label: "House (°C)",
 
                 backgroundColor: ["rgba(255, 99, 132, 0)"],
                 borderColor: ["rgba(255,99,132,1)"],

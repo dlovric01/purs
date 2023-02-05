@@ -18,8 +18,6 @@ window.onclick = function (event) {
 };
 
 function chart1Function(myChart1) {
-  console.log(temperatures1.length);
-
   // get first temperature
   var xhr = new XMLHttpRequest();
   xhr.open("GET", "/temp_sensor_one", true);
@@ -27,13 +25,25 @@ function chart1Function(myChart1) {
     if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
       if (this.responseText == "Sensor not connected") {
         document.getElementById("loader1").style.display = "none";
+        document.getElementById("monitorTemperature").style.pointerEvents =
+          "none";
+        document.getElementById("monitorTemperature").style.opacity = "0.3";
+
         document.getElementById("errorSensorNotConnected1").style.display =
           "flex";
         document.getElementById("temp1").style.display = "none";
-        document.getElementById(
-          "lastActiveDate1"
-        ).innerHTML = `Last time active: ${dates1[dates1.length - 1]}`;
+        if (dates1.length > 1) {
+          document.getElementById(
+            "lastActiveDate1"
+          ).innerHTML = `Last time active: ${dates1[dates1.length - 1]}`;
+        } else {
+          document.getElementById("lastActiveDate1").innerHTML =
+            "Last time active: No data";
+        }
       } else {
+        document.getElementById("monitorTemperature").style.pointerEvents =
+          "all";
+        document.getElementById("monitorTemperature").style.opacity = "1";
         temperatures1.push(parseFloat(this.responseText));
         document.getElementById("temperature1").innerHTML = this.responseText;
         document.getElementById("loader1").style.display = "none";
@@ -62,9 +72,14 @@ function chart2Function(myChart2) {
         document.getElementById("errorSensorNotConnected2").style.display =
           "flex";
         document.getElementById("temp2").style.display = "none";
-        document.getElementById(
-          "lastActiveDate2"
-        ).innerHTML = `Last time active: ${dates2[dates2.length - 1]}`;
+        if (dates2.length > 1) {
+          document.getElementById(
+            "lastActiveDate2"
+          ).innerHTML = `Last time active: ${dates2[dates2.length - 1]}`;
+        } else {
+          document.getElementById("lastActiveDate2").innerHTML =
+            "Last time active: No data";
+        }
       } else {
         temperatures2.push(parseFloat(this.responseText));
 
@@ -94,7 +109,6 @@ function setTemperature() {
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhr.onreadystatechange = function () {
       if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-        console.log("Value sent successfully");
         document.getElementById("targetedTemperature").innerHTML =
           this.responseText;
       }
@@ -131,7 +145,6 @@ function getDevicesStatus() {
       var parsedString = JSON.parse(this.responseText);
       document.getElementById("fan").innerHTML = parsedString.fan;
       document.getElementById("radiator").innerHTML = parsedString.radiator;
-
       switch (parsedString.fan) {
         case "ON":
           document.getElementById("fan").style.color = "green";
