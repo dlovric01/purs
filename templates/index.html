@@ -70,6 +70,7 @@
           <h2>Targeted temperature</h2>
           <div class="targetedTemperature" id="targetedTemperature"></div>
           <br />
+          {% if user.role == "admin" %}
           <div class="setTemp">
             <input
               class="tempField"
@@ -81,6 +82,7 @@
             />
             <button onclick="setTemperature()">Set</button>
           </div>
+          {% endif %}
         </div>
         <div class="monitorTemperatureColumn">
           <h2>Radiator</h2>
@@ -156,13 +158,6 @@
       dates1 = dates1.reverse();
       temperatures2 = temperatures2.reverse();
       dates2 = dates2.reverse();
-      var maxValue = temperatures1[temperatures1.length - 1];
-      if (
-        temperatures1[temperatures1.length - 1] <
-        temperatures2[temperatures1.length - 1]
-      ) {
-        maxValue = temperatures2[temperatures1.length - 1];
-      }
 
       var myChart1 = new Chart(
         document.getElementById("myChart1").getContext("2d"),
@@ -186,7 +181,7 @@
                 {
                   ticks: {
                     min: 0,
-                    max: parseFloat(maxValue) + 10,
+                    max: 50,
                   },
                 },
               ],
@@ -222,7 +217,7 @@
                 {
                   ticks: {
                     min: 0,
-                    max: parseFloat(maxValue) + 10,
+                    max: 50,
                   },
                 },
               ],

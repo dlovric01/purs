@@ -41,18 +41,21 @@ def getCurrentTemperature(mysql, dt, table):
     cursor = mysql.connection.cursor()
     query = f'SELECT value,date_time FROM {table} ORDER BY id DESC LIMIT 1;'
     cursor.execute(query)
-    response = cursor.fetchone()
-    temperature = response[0]
-    lastDateFromDB = response[1]
-    dateNow = dt.datetime.now()
+    try:
+        response = cursor.fetchone()
+        temperature = response[0]
+        lastDateFromDB = response[1]
+        dateNow = dt.datetime.now()
 
-    # compares date and if there are 10 seconds appart it means sensor is not working
-    isSensorConnected = compare_dates(lastDateFromDB, dateNow)
+        # compares date and if there are 10 seconds appart it means sensor is not working
+        isSensorConnected = compare_dates(lastDateFromDB, dateNow)
 
-    mysql.connection.commit()
-    cursor.close()
+        mysql.connection.commit()
+        cursor.close()
 
-    return temperature, isSensorConnected
+        return temperature, isSensorConnected
+    except:
+        return 0, False,
 
 
 def checkDBforUser(mysql, request, sha256):
