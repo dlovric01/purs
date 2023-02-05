@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_mysqldb import MySQL
-from functions import storeTemperature, getTemperatureData, getCurrentTemperature, checkDBforUser, getAllUsers, getUser, getTargetedTemperature, storeTargetedTemperature
+from functions import storeTemperature, getTemperatureData, getCurrentTemperature, checkDBforUser, getAllUsers, getUser, getTargetedTemperature, storeTargetedTemperature, getDevicesStatus, storeDevicesStatus
 
 from hashlib import sha256
 import datetime as dt
@@ -89,53 +89,61 @@ def logout():
 
 
 # sensor 1
-@app.route("/send-temp1")
-def receive_value1():
-    value = request.args.get("value")
-    if value:
-        storeTemperature(mysql, value, table='temperature1')
-        return 'Value stored'
-    return 'Value not recieved'
+@app.route("/temp_sensor_one", methods=["GET", "POST"],)
+def temperature_sensor1():
+    if request.method == "GET":
+        temperature1, isSensorConnected = getCurrentTemperature(
+            mysql, dt, table='temperature1')
+        if isSensorConnected:
+            return str(temperature1)
+        else:
+            return 'Sensor not connected'
+    elif request.method == "POST":
+        value = request.args.get("value")
+        if value:
+            storeTemperature(mysql, value, table='temperature1')
+            return 'Value stored'
+        return 'Value not recieved'
 
 
 # sensor 2
-@app.route("/send-temp2")
-def receive_value2():
-    value = request.args.get("value")
-    if value:
-        storeTemperature(mysql, value, table='temperature2')
-        return 'Value stored'
-    return 'Value not recieved'
-
-
-@app.route('/get_current_temperature1')
-def get_current_temperature1():
-    temperature1, isSensorConnected = getCurrentTemperature(
-        mysql, dt, table='temperature1')
-    if isSensorConnected:
-        return str(temperature1)
-    else:
-        return 'Sensor not connected'
-
-
-@app.route('/get_current_temperature2')
-def get_current_temperature2():
-    temperature2, isSensorConnected = getCurrentTemperature(
-        mysql, dt, table='temperature2')
-    if isSensorConnected:
-        return str(temperature2)
-    else:
-        return 'Sensor not connected'
+@app.route("/temp_sensor_two", methods=["GET", "POST"])
+def store_sensor2_temp():
+    if request.method == "GET":
+        temperature2, isSensorConnected = getCurrentTemperature(
+            mysql, dt, table='temperature2')
+        if isSensorConnected:
+            return str(temperature2)
+        else:
+            return 'Sensor not connected'
+    elif request.method == "POST":
+        value = request.args.get("value")
+        if value:
+            storeTemperature(mysql, value, table='temperature2')
+            return 'Value stored'
+        return 'Value not recieved'
 
 
 @app.route("/targeted_temperature", methods=["GET", "POST"],)
-def get_value():
-    print(request.method)
+def targeted_temp():
     if request.method == "GET":
-        value = getTargetedTemperature(mysql)
-        return str(value)
+        targetedTemperature = getTargetedTemperature(mysql)
+        return str(targetedTemperature)
     elif request.method == "POST":
         storeTargetedTemperature(mysql, request)
+        targetedTemperature = getTargetedTemperature(mysql)
+        return str(targetedTemperature)
+
+
+@app.route("/devices", methods=["GET", "POST"])
+def device_status():
+    if request.method == "GET":
+        devicesStatus = getDevicesStatus(mysql)
+        return devicesStatus
+    elif request.method == "POST":
+        storeDevicesStatus(mysql, request)
+        devicesStatus = getDevicesStatus(mysql)
+        return devicesStatus
 
 
 if __name__ == '__main__':

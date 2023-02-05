@@ -68,7 +68,7 @@
         </div>
         <div class="monitorTemperatureColumn">
           <h2>Targeted temperature</h2>
-          <div class="targetedTemperature" id="targetedTemperature">20</div>
+          <div class="targetedTemperature" id="targetedTemperature"></div>
           <br />
           <div class="setTemp">
             <input
@@ -90,24 +90,11 @@
     </div>
 
     <script>
-      var fanBool = true;
-      var radiatorBool = false;
-
-      if (fanBool) {
-        document.getElementById("fan").innerHTML = "ON";
-        document.getElementById("fan").style.color = "green";
-      } else {
-        document.getElementById("fan").innerHTML = "OFF";
-        document.getElementById("fan").style.color = "red";
-      }
-
-      if (radiatorBool) {
-        document.getElementById("radiator").innerHTML = "ON";
-        document.getElementById("radiator").style.color = "green";
-      } else {
-        document.getElementById("radiator").innerHTML = "OFF";
-        document.getElementById("radiator").style.color = "red";
-      }
+      getTargetedTemperature();
+      getDevicesStatus();
+      setInterval(() => {
+        getDevicesStatus();
+      }, 1000);
     </script>
 
     <div class="myChartsRow">

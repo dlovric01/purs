@@ -21,7 +21,6 @@ def getTemperatureData(mysql, session, table):
 
 def storeTemperature(mysql, value, table):
     temp = float(value)
-    print('Storing temperature:', temp)
     cursor = mysql.connection.cursor()
     query = f"INSERT INTO {table} (date_time, value) VALUES (NOW() , %s);"
     cursor.execute(query, (temp,))
@@ -116,14 +115,34 @@ def getTargetedTemperature(mysql):
 
 def storeTargetedTemperature(mysql, request):
     cursor = mysql.connection.cursor()
-    # insert into table updated targeted temp
-    query = f"INSERT INTO targetedTemperature (value) VALUES (%s);"
-    cursor.execute(query, )
-    # remove old targeted value so table always remains 1x1
-    query = f"DELETE FROM targetedTemperature ORDER BY id ASC LIMIT 1;"
-    cursor.execute(query, )
+    query = f"REPLACE INTO targetedTemperature (id,value) VALUES (1,%s);"
+    cursor.execute(query, (request.form.get('value'),))
     mysql.connection.commit()
     cursor.close()
+
+
+def storeDevicesStatus(mysql, request):
+    cursor = mysql.connection.cursor()
+    fan = request.args.get('fan')
+    radiator = request.args.get('radiator')
+    query = f"REPLACE INTO devicesStatus (id,fan,radiator) VALUES (1,%s,%s);"
+    cursor.execute(query, (fan, radiator,))
+    mysql.connection.commit()
+    cursor.close()
+
+
+def getDevicesStatus(mysql):
+    cursor = mysql.connection.cursor()
+    query = f'SELECT * FROM devicesStatus;'
+    cursor.execute(query, )
+    devices = cursor.fetchone()
+    devicesStatus = ({
+        'fan': devices[1],
+        'radiator': devices[2],
+    })
+    mysql.connection.commit()
+    cursor.close()
+    return devicesStatus
 
 
 def compare_dates(date1, date2):
