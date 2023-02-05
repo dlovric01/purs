@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_mysqldb import MySQL
-from functions import storeTemperature, getTemperatureData, getCurrentTemperature, checkDBforUser, getAllUsers, getUser
+from functions import storeTemperature, getTemperatureData, getCurrentTemperature, checkDBforUser, getAllUsers, getUser, getTargetedTemperature, storeTargetedTemperature
 
 from hashlib import sha256
 import datetime as dt
@@ -8,7 +8,7 @@ import datetime as dt
 
 app = Flask(__name__)
 # define secret key for session
-app.secret_key = '_5#y2L"aF4Qea4sseze\n\xec]/'
+app.secret_key = '_5#y2L"aF4Qea43sseze\n\xec]/'
 
 # mysql database parameters
 app.config['MYSQL_HOST'] = 'localhost'
@@ -126,6 +126,16 @@ def get_current_temperature2():
         return str(temperature2)
     else:
         return 'Sensor not connected'
+
+
+@app.route("/targeted_temperature", methods=["GET", "POST"],)
+def get_value():
+    print(request.method)
+    if request.method == "GET":
+        value = getTargetedTemperature(mysql)
+        return str(value)
+    elif request.method == "POST":
+        storeTargetedTemperature(mysql, request)
 
 
 if __name__ == '__main__':

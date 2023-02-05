@@ -21,7 +21,7 @@ def getTemperatureData(mysql, session, table):
 
 def storeTemperature(mysql, value, table):
     temp = float(value)
-    print('Recieved value:', temp)
+    print('Storing temperature:', temp)
     cursor = mysql.connection.cursor()
     query = f"INSERT INTO {table} (date_time, value) VALUES (NOW() , %s);"
     cursor.execute(query, (temp,))
@@ -102,6 +102,28 @@ def getUser(mysql, session):
     })
 
     return user
+
+
+def getTargetedTemperature(mysql):
+    cursor = mysql.connection.cursor()
+    query = f'SELECT value FROM targetedTemperature;'
+    cursor.execute(query, )
+    temp = cursor.fetchone()[0]
+    mysql.connection.commit()
+    cursor.close()
+    return temp
+
+
+def storeTargetedTemperature(mysql, request):
+    cursor = mysql.connection.cursor()
+    # insert into table updated targeted temp
+    query = f"INSERT INTO targetedTemperature (value) VALUES (%s);"
+    cursor.execute(query, )
+    # remove old targeted value so table always remains 1x1
+    query = f"DELETE FROM targetedTemperature ORDER BY id ASC LIMIT 1;"
+    cursor.execute(query, )
+    mysql.connection.commit()
+    cursor.close()
 
 
 def compare_dates(date1, date2):

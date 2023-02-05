@@ -45,6 +45,32 @@ void setup()
                   Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
 }
 
+void sendRequest(String path)
+{
+  String url = path;
+
+  if (!client.connect(host, httpPort))
+  {
+    Serial.println("Connection failed");
+    return;
+  }
+
+  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+               "Host: " + host + "\r\n" +
+               "Connection: close\r\n\r\n");
+
+  String line = client.readStringUntil('\n');
+  Serial.println(line);
+
+  Serial.println();
+  Serial.print(client.readString());
+
+  Serial.println();
+  Serial.println("Closing connection");
+  client.stop();
+  delay(2500);
+}
+
 void loop()
 {
   // must call this to wake sensor up and get new measurement data
@@ -58,28 +84,8 @@ void loop()
     Serial.println(" *C");
     Serial.println();
 
-    String url = "/send-temp1?value=" + String(temp);
-
-    if (!client.connect(host, httpPort))
-    {
-      Serial.println("Connection failed");
-      return;
-    }
-
-    client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-                 "Host: " + host + "\r\n" +
-                 "Connection: close\r\n\r\n");
-
-    while (client.available())
-    {
-      String line = client.readStringUntil('\r');
-      Serial.print(line);
-    }
-
-    Serial.println();
-    Serial.println("Closing connection");
-    client.stop();
-    delay(5000);
+    sendRequest("/send-temp1?value=" + String(temp));
+    sendRequest("targeted_temperature");
   }
   else
   {

@@ -60,6 +60,56 @@
       </div>
     </div>
 
+    <div class="monitorTemperature">
+      <div class="monitorTemperatureRow">
+        <div class="monitorTemperatureColumn">
+          <h2>Fan</h2>
+          <div class="device" id="fan"></div>
+        </div>
+        <div class="monitorTemperatureColumn">
+          <h2>Targeted temperature</h2>
+          <div class="targetedTemperature" id="targetedTemperature">20</div>
+          <br />
+          <div class="setTemp">
+            <input
+              class="tempField"
+              type="temperature"
+              id="set_targeted_temperature"
+              min="10"
+              max="40"
+              required
+            />
+            <button onclick="setTemperature()">Set</button>
+          </div>
+        </div>
+        <div class="monitorTemperatureColumn">
+          <h2>Radiator</h2>
+          <div class="device" id="radiator"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var fanBool = true;
+      var radiatorBool = false;
+
+      if (fanBool) {
+        document.getElementById("fan").innerHTML = "ON";
+        document.getElementById("fan").style.color = "green";
+      } else {
+        document.getElementById("fan").innerHTML = "OFF";
+        document.getElementById("fan").style.color = "red";
+      }
+
+      if (radiatorBool) {
+        document.getElementById("radiator").innerHTML = "ON";
+        document.getElementById("radiator").style.color = "green";
+      } else {
+        document.getElementById("radiator").innerHTML = "OFF";
+        document.getElementById("radiator").style.color = "red";
+      }
+    </script>
+
     <div class="myChartsRow">
       <canvas class="myChart1" id="myChart1"></canvas>
       <canvas class="myChart2" id="myChart2"></canvas>
@@ -127,15 +177,87 @@
         maxValue = temperatures2[temperatures1.length - 1];
       }
 
-      // initial trigger
-      chart1Function();
-      chart2Function();
+      var myChart1 = new Chart(
+        document.getElementById("myChart1").getContext("2d"),
+        {
+          type: "line",
+          data: {
+            labels: dates1,
+            datasets: [
+              {
+                label: "Living room (°C)",
 
-      // call for data every 5 seconds
-      setInterval(chart1Function, 5000);
-      setInterval(chart2Function, 5000);
-      chart1Draw();
-      chart2Draw();
+                backgroundColor: ["rgba(255, 99, 132, 0)"],
+                borderColor: ["rgba(255,99,132,1)"],
+                data: temperatures1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              yAxes: [
+                {
+                  ticks: {
+                    min: 0,
+                    max: parseFloat(maxValue) + 10,
+                  },
+                },
+              ],
+            },
+            elements: {
+              point: {
+                radius: 2,
+              },
+            },
+          },
+        }
+      );
+
+      var myChart2 = new Chart(
+        document.getElementById("myChart2").getContext("2d"),
+        {
+          type: "line",
+          data: {
+            labels: dates2,
+            datasets: [
+              {
+                label: "Basement (°C)",
+
+                backgroundColor: ["rgba(255, 255, 255, 0)"],
+                borderColor: ["rgba(0,0,132,1)"],
+                data: temperatures2,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              yAxes: [
+                {
+                  ticks: {
+                    min: 0,
+                    max: parseFloat(maxValue) + 10,
+                  },
+                },
+              ],
+            },
+            elements: {
+              point: {
+                radius: 2,
+              },
+            },
+          },
+        }
+      );
+
+      chart1Function(myChart1);
+      setInterval(() => {
+        chart1Function(myChart1);
+      }, 5000);
+
+      chart2Function(myChart1);
+      setInterval(() => {
+        chart2Function(myChart1);
+      }, 5000);
     </script>
   </body>
 </html>
