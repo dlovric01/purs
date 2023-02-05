@@ -43,22 +43,30 @@ body {
 }
 
 
+.sensors {
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
 
 .parent1 {
     background-color: white;
     border-radius: 1.5rem;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     width: 400px;
+    max-width: 400px;
     height: 200px;
     display: flex;
-    position: absolute;
-    right: 500px;
-    left: 0;
-    margin: auto;
-    top: 150px;
+    height: 200px;
+    min-width: 300px;
+    margin: 20px;
     z-index: 1;
     flex-direction: column;
     align-items: center;
+    flex: 1;
+
 
 }
 
@@ -66,21 +74,21 @@ body {
     background-color: white;
     border-radius: 1.5rem;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    width: 400px;
+    max-width: 400px;
     height: 200px;
+    min-width: 300px;
     display: flex;
-    position: absolute;
-    right: 0;
-    left: 500px;
-    margin: auto;
-    top: 150px;
+    margin: 20px;
     z-index: 1;
     flex-direction: column;
     align-items: center;
+    flex: 1;
+
 
 }
 
 .row {
+    max-width: 400px;
     display: none;
     justify-content: center;
     margin: auto;
@@ -108,6 +116,13 @@ body {
     font-size: 30px;
     margin: auto;
     color: red;
+    flex-direction: column;
+}
+
+.lastActiveDate {
+    font-size: 15px;
+    margin: auto;
+    color: black;
 }
 
 .errorLiveGraphNotAvailable {
@@ -147,10 +162,9 @@ body {
 
 .myChartsRow {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    margin: 100px;
-
 }
 
 
@@ -159,6 +173,18 @@ body {
     max-width: 600px;
     margin: 20px;
     padding: 20px;
+    flex: 1;
+    border-radius: 10px;
+
+}
+
+.myChart2 {
+    border: 1px solid gainsboro;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 20px;
+    padding: 20px;
+    flex: 1;
 }
 
 
@@ -263,4 +289,8 @@ body {
     height: 350px;
     overflow: hidden;
     opacity: 0.4;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(/static/images/houseee.png);
 }
