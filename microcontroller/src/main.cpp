@@ -45,28 +45,40 @@ void setup()
                   Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
 }
 
-void sendRequest(String path)
+float getTargetedTemperature()
 {
-  String url = path;
-
+  String url = "/targeted_temperature";
   if (!client.connect(host, httpPort))
   {
     Serial.println("Connection failed");
-    return;
+    return 0;
   }
 
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
                "Connection: close\r\n\r\n");
 
-  String line = client.readStringUntil('\n');
-  Serial.println(line);
-
+  String line = client.readString();
+  float value = line.substring(line.indexOf("\r\n\r\n")).toFloat();
+  Serial.print(value);
   Serial.println();
-  Serial.print(client.readString());
+  // Serial.println("Closing connection");
+  client.stop();
+  return value;
+  delay(2500);
+}
 
-  Serial.println();
-  Serial.println("Closing connection");
+void storeCurrentTemp(float temp)
+{
+  String url = "/send-temp1?value=" + String(temp);
+  if (!client.connect(host, httpPort))
+  {
+    Serial.println("Connection failed");
+    return;
+  }
+  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+               "Host: " + host + "\r\n" +
+               "Connection: close\r\n\r\n");
   client.stop();
   delay(2500);
 }
@@ -79,13 +91,37 @@ void loop()
   {
     // can now print out the new measurements
     float temp = bmp.readTemperature();
-    Serial.print(F("Temperature = "));
-    Serial.print(temp);
-    Serial.println(" *C");
-    Serial.println();
+    // Serial.print(F("Temperature = "));
+    // Serial.print(temp);
+    // Serial.println(" *C");
+    // Serial.println();
 
-    sendRequest("/send-temp1?value=" + String(temp));
-    sendRequest("targeted_temperature");
+    storeCurrentTemp(temp);
+    float targetedTemp = getTargetedTemperature();
+    if (targetedTemp != 0)
+    {
+      if (targetedTemp > temp)
+      {
+        Serial.print("FAN: OFF");
+        Serial.println();
+        Serial.print("RADIATOR: ON");
+        Serial.println();
+      }
+      else if (targetedTemp < temp)
+      {
+        Serial.print("FAN: OFF");
+        Serial.println();
+        Serial.print("RADIATOR: ON");
+        Serial.println();
+      }
+      else if (targetedTemp == temp)
+      {
+        Serial.print("FAN: OFF");
+        Serial.println();
+        Serial.print("RADIATOR: OFF");
+        Serial.println();
+      }
+    }
   }
   else
   {
