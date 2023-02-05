@@ -70,17 +70,32 @@ float getTargetedTemperature()
 
 void storeCurrentTemp(float temp)
 {
-  String url = "/send-temp1?value=" + String(temp);
+  String url = "/temp_sensor_one?value=" + String(temp);
   if (!client.connect(host, httpPort))
   {
     Serial.println("Connection failed");
     return;
   }
-  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+  client.print(String("POST ") + url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
                "Connection: close\r\n\r\n");
   client.stop();
   delay(2500);
+}
+
+void updateDeviceStatus(String fan, String radiator)
+{
+  String url = "/devices?fan=" + String(fan) + "&radiator=" + String(radiator);
+  if (!client.connect(host, httpPort))
+  {
+    Serial.println("Connection failed");
+    return;
+  }
+  client.print(String("POST ") + url + " HTTP/1.1\r\n" +
+               "Host: " + host + "\r\n" +
+               "Connection: close\r\n\r\n");
+  client.stop();
+  delay(1000);
 }
 
 void loop()
@@ -89,12 +104,7 @@ void loop()
   // it blocks until measurement is complete
   if (bmp.takeForcedMeasurement())
   {
-    // can now print out the new measurements
     float temp = bmp.readTemperature();
-    // Serial.print(F("Temperature = "));
-    // Serial.print(temp);
-    // Serial.println(" *C");
-    // Serial.println();
 
     storeCurrentTemp(temp);
     float targetedTemp = getTargetedTemperature();
@@ -106,13 +116,15 @@ void loop()
         Serial.println();
         Serial.print("RADIATOR: ON");
         Serial.println();
+        updateDeviceStatus("OFF", "ON");
       }
       else if (targetedTemp < temp)
       {
-        Serial.print("FAN: OFF");
+        Serial.print("FAN: ON");
         Serial.println();
-        Serial.print("RADIATOR: ON");
+        Serial.print("RADIATOR: OFF");
         Serial.println();
+        updateDeviceStatus("ON", "OFF");
       }
       else if (targetedTemp == temp)
       {
@@ -120,6 +132,7 @@ void loop()
         Serial.println();
         Serial.print("RADIATOR: OFF");
         Serial.println();
+        updateDeviceStatus("OFF", "OFF");
       }
     }
   }
