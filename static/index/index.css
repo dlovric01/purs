@@ -364,3 +364,26 @@ body {
 h2 {
     font-size: 30px;
 }
+
+
+.monitorTemperatureTitle {
+    text-align: center;
+    margin: auto;
+    margin-top: 10px;
+    font-size: 20px;
+}
+
+#controllerDevicesNotConnected {
+    display: none;
+    text-align: center;
+    margin: auto;
+    margin-top: 10px;
+    color: red;
+    font-weight: bold;
+}
+
+.monitorTemperatureTitleColumn {
+    flex-direction: column;
+    width: 100%;
+    margin: auto;
+}

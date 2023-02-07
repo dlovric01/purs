@@ -28,7 +28,7 @@ void setup()
   pinMode(4, OUTPUT);
 }
 
-float getTemperatures()
+float getTargetedTemp()
 {
   String url = "/targeted_temperature";
   if (!client.connect(host, httpPort))
@@ -48,7 +48,38 @@ float getTemperatures()
   // Serial.println("Closing connection");
   client.stop();
   return value;
-  delay(2500);
+}
+
+float getCurrentTemp()
+{
+  String url = "/temp_sensor_one";
+  if (!client.connect(host, httpPort))
+  {
+    Serial.println("Connection failed");
+    return 0;
+  }
+
+  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+               "Host: " + host + "\r\n" +
+               "Connection: close\r\n\r\n");
+
+  String line = client.readString();
+  String bla = (line.substring(line.indexOf("\r\n\r\n")));
+  bla.trim();
+  float value;
+  if (bla == "Sensor not connected")
+  {
+    value = -1;
+  }
+  else
+  {
+    value = line.substring(line.indexOf("\r\n\r\n")).toFloat();
+  }
+  Serial.print(value);
+  Serial.println();
+  // Serial.println("Closing connection");
+  client.stop();
+  return value;
 }
 
 void updateDeviceStatus(String fan, String radiator)
@@ -63,16 +94,18 @@ void updateDeviceStatus(String fan, String radiator)
                "Host: " + host + "\r\n" +
                "Connection: close\r\n\r\n");
   client.stop();
-  delay(1000);
 }
 
 void loop()
 {
 
-  float targetedTemp = getTemperatures();
-  if (targetedTemp != 0)
+  float targetedTemp = getTargetedTemp();
+  float currentTemp = getCurrentTemp();
+
+  if (targetedTemp != 0 && currentTemp != -1 && currentTemp != 0.00)
   {
-    if (targetedTemp > 25)
+
+    if (targetedTemp > currentTemp)
     {
       Serial.print("FAN: OFF");
       Serial.println();
@@ -82,7 +115,7 @@ void loop()
       digitalWrite(4, HIGH);
       updateDeviceStatus("OFF", "ON");
     }
-    else if (targetedTemp < 25)
+    else if (targetedTemp < currentTemp)
     {
       Serial.print("FAN: ON");
       Serial.println();
@@ -92,7 +125,7 @@ void loop()
       digitalWrite(4, LOW);
       updateDeviceStatus("ON", "OFF");
     }
-    else if (targetedTemp == 25)
+    else if (targetedTemp == currentTemp)
     {
       Serial.print("FAN: OFF");
       Serial.println();
@@ -103,4 +136,5 @@ void loop()
       updateDeviceStatus("OFF", "OFF");
     }
   }
+  delay(1000);
 }

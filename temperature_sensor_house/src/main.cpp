@@ -57,7 +57,6 @@ void storeCurrentTemp(float temp)
                "Host: " + host + "\r\n" +
                "Connection: close\r\n\r\n");
   client.stop();
-  delay(2500);
 }
 
 void loop()
@@ -74,4 +73,5 @@ void loop()
   {
     Serial.println("Forced measurement failed!");
   }
+  delay(5000);
 }

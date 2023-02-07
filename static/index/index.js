@@ -139,13 +139,18 @@ function getDevicesStatus() {
       if (this.responseText == "Devices not connected") {
         document.getElementById("fan").innerHTML = "OFF";
         document.getElementById("radiator").innerHTML = "OFF";
-        document.getElementById("monitorTemperature").style.pointerEvents =
+        document.getElementById("monitorTemperatureRow").style.pointerEvents =
           "none";
-        document.getElementById("monitorTemperature").style.opacity = "0.3";
+        document.getElementById("monitorTemperatureRow").style.opacity = "0.3";
+        document.getElementById("controllerDevicesNotConnected").style.display =
+          "block";
       } else {
-        document.getElementById("monitorTemperature").style.pointerEvents =
+        document.getElementById("controllerDevicesNotConnected").style.display =
+          "none";
+
+        document.getElementById("monitorTemperatureRow").style.pointerEvents =
           "all";
-        document.getElementById("monitorTemperature").style.opacity = "1";
+        document.getElementById("monitorTemperatureRow").style.opacity = "1";
         var parsedString = JSON.parse(this.responseText);
         document.getElementById("fan").innerHTML = parsedString.fan;
         document.getElementById("radiator").innerHTML = parsedString.radiator;

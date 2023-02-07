@@ -61,18 +61,16 @@
     </div>
 
     <div class="monitorTemperature" id="monitorTemperature">
-      <h3
-        style="
-          text-align: center;
-          margin: auto;
-          margin-top: 10px;
-          font-weight: bold;
-        "
-      >
-        House
-      </h3>
+      <div class="monitorTemperatureTitleColumn">
+        <div class="monitorTemperatureTitle">
+          Automatic temperature controller - House
+        </div>
+        <div id="controllerDevicesNotConnected">
+          Controller devices not connected
+        </div>
+      </div>
 
-      <div class="monitorTemperatureRow">
+      <div class="monitorTemperatureRow" id="monitorTemperatureRow">
         <div class="monitorTemperatureColumn">
           <h2>Fan</h2>
           <div class="device" id="fan"></div>
@@ -107,7 +105,7 @@
       getDevicesStatus();
       setInterval(() => {
         getDevicesStatus();
-      }, 1000);
+      }, 2000);
     </script>
 
     <div class="myChartsRow">
