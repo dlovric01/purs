@@ -5,10 +5,10 @@
 #include <WiFiClient.h>
 #include <WiFiUdp.h>
 
-const char *ssid = "BRANKO";
+const char *ssid = "BRANKO_EXT";
 const char *password = "zagreb300";
 
-const char *host = "192.168.1.3";
+const char *host = "192.168.1.100";
 const int httpPort = 80;
 
 Adafruit_BMP280 bmp; // I2C
@@ -45,29 +45,6 @@ void setup()
                   Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
 }
 
-float getTargetedTemperature()
-{
-  String url = "/targeted_temperature";
-  if (!client.connect(host, httpPort))
-  {
-    Serial.println("Connection failed");
-    return 0;
-  }
-
-  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-               "Host: " + host + "\r\n" +
-               "Connection: close\r\n\r\n");
-
-  String line = client.readString();
-  float value = line.substring(line.indexOf("\r\n\r\n")).toFloat();
-  Serial.print(value);
-  Serial.println();
-  // Serial.println("Closing connection");
-  client.stop();
-  return value;
-  delay(2500);
-}
-
 void storeCurrentTemp(float temp)
 {
   String url = "/temp_sensor_one?value=" + String(temp);
@@ -83,21 +60,6 @@ void storeCurrentTemp(float temp)
   delay(2500);
 }
 
-void updateDeviceStatus(String fan, String radiator)
-{
-  String url = "/devices?fan=" + String(fan) + "&radiator=" + String(radiator);
-  if (!client.connect(host, httpPort))
-  {
-    Serial.println("Connection failed");
-    return;
-  }
-  client.print(String("POST ") + url + " HTTP/1.1\r\n" +
-               "Host: " + host + "\r\n" +
-               "Connection: close\r\n\r\n");
-  client.stop();
-  delay(1000);
-}
-
 void loop()
 {
   // must call this to wake sensor up and get new measurement data
@@ -107,34 +69,6 @@ void loop()
     float temp = bmp.readTemperature();
 
     storeCurrentTemp(temp);
-    float targetedTemp = getTargetedTemperature();
-    if (targetedTemp != 0)
-    {
-      if (targetedTemp > temp)
-      {
-        Serial.print("FAN: OFF");
-        Serial.println();
-        Serial.print("RADIATOR: ON");
-        Serial.println();
-        updateDeviceStatus("OFF", "ON");
-      }
-      else if (targetedTemp < temp)
-      {
-        Serial.print("FAN: ON");
-        Serial.println();
-        Serial.print("RADIATOR: OFF");
-        Serial.println();
-        updateDeviceStatus("ON", "OFF");
-      }
-      else if (targetedTemp == temp)
-      {
-        Serial.print("FAN: OFF");
-        Serial.println();
-        Serial.print("RADIATOR: OFF");
-        Serial.println();
-        updateDeviceStatus("OFF", "OFF");
-      }
-    }
   }
   else
   {
