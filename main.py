@@ -138,12 +138,18 @@ def targeted_temp():
 @app.route("/devices", methods=["GET", "POST"])
 def device_status():
     if request.method == "GET":
-        devicesStatus = getDevicesStatus(mysql)
-        return devicesStatus
+        devicesStatus, areDevicesConnected = getDevicesStatus(mysql, dt)
+        if (areDevicesConnected):
+            return devicesStatus
+        else:
+            return 'Devices not connected'
     elif request.method == "POST":
         storeDevicesStatus(mysql, request)
-        devicesStatus = getDevicesStatus(mysql)
-        return devicesStatus
+        devicesStatus, areDevicesConnected = getDevicesStatus(mysql, dt)
+        if (areDevicesConnected):
+            return devicesStatus
+        else:
+            return 'Devices not connected'
 
 
 if __name__ == '__main__':

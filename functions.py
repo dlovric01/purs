@@ -128,24 +128,26 @@ def storeDevicesStatus(mysql, request):
     cursor = mysql.connection.cursor()
     fan = request.args.get('fan')
     radiator = request.args.get('radiator')
-    query = f"REPLACE INTO devicesStatus (id,fan,radiator) VALUES (1,%s,%s);"
+    query = f"REPLACE INTO devicesStatus (id,fan,radiator,date_time) VALUES (1,%s,%s,NOW());"
     cursor.execute(query, (fan, radiator,))
     mysql.connection.commit()
     cursor.close()
 
 
-def getDevicesStatus(mysql):
+def getDevicesStatus(mysql, dt):
     cursor = mysql.connection.cursor()
     query = f'SELECT * FROM devicesStatus;'
     cursor.execute(query, )
     devices = cursor.fetchone()
+    dateNow = dt.datetime.now()
     devicesStatus = ({
         'fan': devices[1],
         'radiator': devices[2],
     })
+    areDevicesConnected = compare_dates(devices[3], dateNow)
     mysql.connection.commit()
     cursor.close()
-    return devicesStatus
+    return devicesStatus, areDevicesConnected
 
 
 def compare_dates(date1, date2):

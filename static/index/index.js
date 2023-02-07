@@ -25,9 +25,6 @@ function chart1Function(myChart1) {
     if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
       if (this.responseText == "Sensor not connected") {
         document.getElementById("loader1").style.display = "none";
-        document.getElementById("monitorTemperature").style.pointerEvents =
-          "none";
-        document.getElementById("monitorTemperature").style.opacity = "0.3";
 
         document.getElementById("errorSensorNotConnected1").style.display =
           "flex";
@@ -41,9 +38,6 @@ function chart1Function(myChart1) {
             "Last time active: No data";
         }
       } else {
-        document.getElementById("monitorTemperature").style.pointerEvents =
-          "all";
-        document.getElementById("monitorTemperature").style.opacity = "1";
         temperatures1.push(parseFloat(this.responseText));
         document.getElementById("temperature1").innerHTML = this.responseText;
         document.getElementById("loader1").style.display = "none";
@@ -142,10 +136,21 @@ function getDevicesStatus() {
   xhr.open("GET", "/devices", true);
   xhr.onreadystatechange = function () {
     if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-      var parsedString = JSON.parse(this.responseText);
-      document.getElementById("fan").innerHTML = parsedString.fan;
-      document.getElementById("radiator").innerHTML = parsedString.radiator;
-      switch (parsedString.fan) {
+      if (this.responseText == "Devices not connected") {
+        document.getElementById("fan").innerHTML = "OFF";
+        document.getElementById("radiator").innerHTML = "OFF";
+        document.getElementById("monitorTemperature").style.pointerEvents =
+          "none";
+        document.getElementById("monitorTemperature").style.opacity = "0.3";
+      } else {
+        document.getElementById("monitorTemperature").style.pointerEvents =
+          "all";
+        document.getElementById("monitorTemperature").style.opacity = "1";
+        var parsedString = JSON.parse(this.responseText);
+        document.getElementById("fan").innerHTML = parsedString.fan;
+        document.getElementById("radiator").innerHTML = parsedString.radiator;
+      }
+      switch (document.getElementById("fan").innerHTML) {
         case "ON":
           document.getElementById("fan").style.color = "green";
           break;
@@ -153,7 +158,7 @@ function getDevicesStatus() {
           document.getElementById("fan").style.color = "red";
           break;
       }
-      switch (parsedString.radiator) {
+      switch (document.getElementById("radiator").innerHTML) {
         case "ON":
           document.getElementById("radiator").style.color = "green";
           break;
