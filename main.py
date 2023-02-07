@@ -95,7 +95,6 @@ def temperature_sensor1():
         temperature1, isSensorConnected = getCurrentTemperature(
             mysql, dt, table='temperature1')
         if isSensorConnected:
-            print(temperature1)
             return str(temperature1)
         else:
             return 'Sensor not connected'

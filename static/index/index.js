@@ -141,7 +141,7 @@ function getDevicesStatus() {
         document.getElementById("radiator").innerHTML = "OFF";
         document.getElementById("monitorTemperatureRow").style.pointerEvents =
           "none";
-        document.getElementById("monitorTemperatureRow").style.opacity = "0.3";
+        document.getElementById("monitorTemperatureRow").style.opacity = "0.2";
         document.getElementById("controllerDevicesNotConnected").style.display =
           "block";
       } else {

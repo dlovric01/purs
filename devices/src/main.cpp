@@ -28,12 +28,47 @@ void setup()
   pinMode(4, OUTPUT);
 }
 
+void blinkNoConnection()
+{
+  digitalWrite(2, HIGH);
+  digitalWrite(4, HIGH);
+  delay(100);
+  digitalWrite(2, LOW);
+  digitalWrite(4, LOW);
+  delay(100);
+  digitalWrite(2, HIGH);
+  digitalWrite(4, HIGH);
+  delay(100);
+  digitalWrite(2, LOW);
+  digitalWrite(4, LOW);
+  delay(10000);
+}
+
+void blinkNoWifi()
+{
+  {
+    digitalWrite(2, HIGH);
+    digitalWrite(4, HIGH);
+    delay(500);
+    digitalWrite(2, LOW);
+    digitalWrite(4, LOW);
+    delay(500);
+    digitalWrite(2, HIGH);
+    digitalWrite(4, HIGH);
+    delay(500);
+    digitalWrite(2, LOW);
+    digitalWrite(4, LOW);
+    delay(5000);
+  }
+}
+
 float getTargetedTemp()
 {
   String url = "/targeted_temperature";
   if (!client.connect(host, httpPort))
   {
     Serial.println("Connection failed");
+    blinkNoConnection();
     return 0;
   }
 
@@ -56,7 +91,7 @@ float getCurrentTemp()
   if (!client.connect(host, httpPort))
   {
     Serial.println("Connection failed");
-    return 0;
+    return -1;
   }
 
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
@@ -88,8 +123,10 @@ void updateDeviceStatus(String fan, String radiator)
   if (!client.connect(host, httpPort))
   {
     Serial.println("Connection failed");
+    delay(10000);
     return;
   }
+
   client.print(String("POST ") + url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
                "Connection: close\r\n\r\n");
@@ -98,43 +135,50 @@ void updateDeviceStatus(String fan, String radiator)
 
 void loop()
 {
-
-  float targetedTemp = getTargetedTemp();
-  float currentTemp = getCurrentTemp();
-
-  if (targetedTemp != 0 && currentTemp != -1 && currentTemp != 0.00)
+  if (WiFi.status() == WL_CONNECTED)
   {
 
-    if (targetedTemp > currentTemp)
+    float targetedTemp = getTargetedTemp();
+    float currentTemp = getCurrentTemp();
+
+    if (targetedTemp != 0 && currentTemp != -1 && currentTemp != 0.00)
     {
-      Serial.print("FAN: OFF");
-      Serial.println();
-      Serial.print("RADIATOR: ON");
-      Serial.println();
-      digitalWrite(2, LOW);
-      digitalWrite(4, HIGH);
-      updateDeviceStatus("OFF", "ON");
+
+      if (targetedTemp > currentTemp)
+      {
+        Serial.print("FAN: OFF");
+        Serial.println();
+        Serial.print("RADIATOR: ON");
+        Serial.println();
+        digitalWrite(2, LOW);
+        digitalWrite(4, HIGH);
+        updateDeviceStatus("OFF", "ON");
+      }
+      else if (targetedTemp < currentTemp)
+      {
+        Serial.print("FAN: ON");
+        Serial.println();
+        Serial.print("RADIATOR: OFF");
+        Serial.println();
+        digitalWrite(2, HIGH);
+        digitalWrite(4, LOW);
+        updateDeviceStatus("ON", "OFF");
+      }
+      else if (targetedTemp == currentTemp)
+      {
+        Serial.print("FAN: OFF");
+        Serial.println();
+        Serial.print("RADIATOR: OFF");
+        Serial.println();
+        digitalWrite(2, LOW);
+        digitalWrite(4, LOW);
+        updateDeviceStatus("OFF", "OFF");
+      }
     }
-    else if (targetedTemp < currentTemp)
-    {
-      Serial.print("FAN: ON");
-      Serial.println();
-      Serial.print("RADIATOR: OFF");
-      Serial.println();
-      digitalWrite(2, HIGH);
-      digitalWrite(4, LOW);
-      updateDeviceStatus("ON", "OFF");
-    }
-    else if (targetedTemp == currentTemp)
-    {
-      Serial.print("FAN: OFF");
-      Serial.println();
-      Serial.print("RADIATOR: OFF");
-      Serial.println();
-      digitalWrite(2, LOW);
-      digitalWrite(4, LOW);
-      updateDeviceStatus("OFF", "OFF");
-    }
+    delay(1000);
   }
-  delay(1000);
+  else
+  {
+    blinkNoWifi();
+  }
 }

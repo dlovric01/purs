@@ -65,9 +65,7 @@
         <div class="monitorTemperatureTitle">
           Automatic temperature controller - House
         </div>
-        <div id="controllerDevicesNotConnected">
-          Controller devices not connected
-        </div>
+        <div id="controllerDevicesNotConnected">Controller not connected</div>
       </div>
 
       <div class="monitorTemperatureRow" id="monitorTemperatureRow">
@@ -245,9 +243,9 @@
         chart1Function(myChart1);
       }, 5000);
 
-      chart2Function(myChart1);
+      chart2Function(myChart2);
       setInterval(() => {
-        chart2Function(myChart1);
+        chart2Function(myChart2);
       }, 5000);
     </script>
   </body>
