@@ -41,7 +41,7 @@ void blinkNoConnection()
   delay(100);
   digitalWrite(2, LOW);
   digitalWrite(4, LOW);
-  delay(10000);
+  delay(2000);
 }
 
 void blinkNoWifi()
