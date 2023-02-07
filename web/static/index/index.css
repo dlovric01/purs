@@ -171,21 +171,25 @@ body {
 
 .myChart1 {
     border: 1px solid gainsboro;
-    max-width: 600px;
+    max-width: 40%;
     margin: 20px;
     padding: 20px;
     flex: 1;
-    border-radius: 10px;
+    background-color: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 
 }
 
 .myChart2 {
     border: 1px solid gainsboro;
-    border-radius: 10px;
-    max-width: 600px;
+    max-width: 40%;
     margin: 20px;
     padding: 20px;
     flex: 1;
+    background-color: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 
@@ -300,10 +304,12 @@ body {
 
 
 .monitorTemperature {
+    background-color: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    border: 1px solid silver;
     border-radius: 30px;
     margin-left: 50px;
     margin-right: 50px;

@@ -47,7 +47,7 @@ def login():
             session['username'] = email
             return redirect(url_for('index')), 303
         else:
-            return render_template('login.html', error='Incorrect email or password')
+            return render_template('login.html', error='Incorrect email or password'), 400
 
 
 # registration page
@@ -70,7 +70,8 @@ def registracija():
         isEmailAlreadyInDb = cursor.fetchone()
         if isEmailAlreadyInDb:
             # User already exists
-            return render_template('register_another_user.html', error='This email is already in use')
+            users = getAllUsers(mysql)
+            return render_template('register_another_user.html', error='This email is already in use', users=users, user=user), 400
         else:
             # Insert the new user into the database
             query = "INSERT INTO users (firstName, lastName, email, password,role) VALUES (%s, %s, %s, UNHEX(SHA2(%s, 256)),%s)"
