@@ -5,10 +5,10 @@
 #include <WiFiClient.h>
 #include <WiFiUdp.h>
 
-const char *ssid = "BRANKO_EXT";
-const char *password = "zagreb300";
+const char *ssid = "Metalmania1";
+const char *password = "ik090669";
 
-const char *host = "192.168.1.100";
+const char *host = "192.168.0.104";
 const int httpPort = 80;
 
 Adafruit_BMP280 bmp; // I2C

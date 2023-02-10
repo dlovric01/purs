@@ -4,10 +4,10 @@
 #include <WiFiClient.h>
 #include <WiFiUdp.h>
 
-const char *ssid = "BRANKO_EXT";
-const char *password = "zagreb300";
+const char *ssid = "Metalmania1";
+const char *password = "ik090669";
 
-const char *host = "192.168.1.100";
+const char *host = "192.168.0.104";
 const int httpPort = 80;
 
 WiFiClient client;
@@ -21,45 +21,12 @@ void setup()
   {
     delay(1000);
     Serial.println("Connecting to WiFi...");
+    // blinkNoWifi();
   }
   Serial.println("Connected to WiFi");
 
   pinMode(2, OUTPUT);
   pinMode(4, OUTPUT);
-}
-
-void blinkNoConnection()
-{
-  digitalWrite(2, HIGH);
-  digitalWrite(4, HIGH);
-  delay(100);
-  digitalWrite(2, LOW);
-  digitalWrite(4, LOW);
-  delay(100);
-  digitalWrite(2, HIGH);
-  digitalWrite(4, HIGH);
-  delay(100);
-  digitalWrite(2, LOW);
-  digitalWrite(4, LOW);
-  delay(2000);
-}
-
-void blinkNoWifi()
-{
-  {
-    digitalWrite(2, HIGH);
-    digitalWrite(4, HIGH);
-    delay(500);
-    digitalWrite(2, LOW);
-    digitalWrite(4, LOW);
-    delay(500);
-    digitalWrite(2, HIGH);
-    digitalWrite(4, HIGH);
-    delay(500);
-    digitalWrite(2, LOW);
-    digitalWrite(4, LOW);
-    delay(5000);
-  }
 }
 
 float getTargetedTemp()
@@ -68,7 +35,7 @@ float getTargetedTemp()
   if (!client.connect(host, httpPort))
   {
     Serial.println("Connection failed");
-    blinkNoConnection();
+    // blinkNoConnection();
     return 0;
   }
 
@@ -135,6 +102,7 @@ void updateDeviceStatus(String fan, String radiator)
 
 void loop()
 {
+
   if (WiFi.status() == WL_CONNECTED)
   {
 
@@ -146,39 +114,25 @@ void loop()
 
       if (targetedTemp > currentTemp)
       {
-        Serial.print("FAN: OFF");
-        Serial.println();
-        Serial.print("RADIATOR: ON");
-        Serial.println();
         digitalWrite(2, LOW);
         digitalWrite(4, HIGH);
         updateDeviceStatus("OFF", "ON");
       }
       else if (targetedTemp < currentTemp)
       {
-        Serial.print("FAN: ON");
-        Serial.println();
-        Serial.print("RADIATOR: OFF");
-        Serial.println();
+
         digitalWrite(2, HIGH);
         digitalWrite(4, LOW);
         updateDeviceStatus("ON", "OFF");
       }
       else if (targetedTemp == currentTemp)
       {
-        Serial.print("FAN: OFF");
-        Serial.println();
-        Serial.print("RADIATOR: OFF");
-        Serial.println();
+
         digitalWrite(2, LOW);
         digitalWrite(4, LOW);
         updateDeviceStatus("OFF", "OFF");
       }
     }
     delay(1000);
-  }
-  else
-  {
-    blinkNoWifi();
   }
 }
