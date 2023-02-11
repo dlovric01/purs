@@ -23,33 +23,31 @@ function chart1Function(myChart1) {
   xhr.open("GET", "/temp_sensor_one", true);
   xhr.onreadystatechange = function () {
     if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-      if (this.responseText == "Sensor not connected") {
-        document.getElementById("loader1").style.display = "none";
+      temperatures1.push(parseFloat(this.responseText));
+      document.getElementById("temperature1").innerHTML = this.responseText;
+      document.getElementById("loader1").style.display = "none";
+      document.getElementById("errorSensorNotConnected1").style.display =
+        "none";
+      document.getElementById("temp1").style.display = "flex";
+      dates1.push(new Date().toLocaleTimeString());
+      if (dates1.length >= 30) {
+        temperatures1.shift();
+        dates1.shift();
+      }
+      myChart1.update();
+    } else {
+      document.getElementById("loader1").style.display = "none";
 
-        document.getElementById("errorSensorNotConnected1").style.display =
-          "flex";
-        document.getElementById("temp1").style.display = "none";
-        if (dates1.length > 1) {
-          document.getElementById(
-            "lastActiveDate1"
-          ).innerHTML = `Last time active: ${dates1[dates1.length - 1]}`;
-        } else {
-          document.getElementById("lastActiveDate1").innerHTML =
-            "Last time active: No data";
-        }
+      document.getElementById("errorSensorNotConnected1").style.display =
+        "flex";
+      document.getElementById("temp1").style.display = "none";
+      if (dates1.length > 1) {
+        document.getElementById(
+          "lastActiveDate1"
+        ).innerHTML = `Last time active: ${dates1[dates1.length - 1]}`;
       } else {
-        temperatures1.push(parseFloat(this.responseText));
-        document.getElementById("temperature1").innerHTML = this.responseText;
-        document.getElementById("loader1").style.display = "none";
-        document.getElementById("errorSensorNotConnected1").style.display =
-          "none";
-        document.getElementById("temp1").style.display = "flex";
-        dates1.push(new Date().toLocaleTimeString());
-        if (dates1.length >= 30) {
-          temperatures1.shift();
-          dates1.shift();
-        }
-        myChart1.update();
+        document.getElementById("lastActiveDate1").innerHTML =
+          "Last time active: No data";
       }
     }
   };
@@ -61,33 +59,30 @@ function chart2Function(myChart2) {
   xhr.open("GET", "/temp_sensor_two", true);
   xhr.onreadystatechange = function () {
     if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-      if (this.responseText == "Sensor not connected") {
-        document.getElementById("loader2").style.display = "none";
-        document.getElementById("errorSensorNotConnected2").style.display =
-          "flex";
-        document.getElementById("temp2").style.display = "none";
-        if (dates2.length > 1) {
-          document.getElementById(
-            "lastActiveDate2"
-          ).innerHTML = `Last time active: ${dates2[dates2.length - 1]}`;
-        } else {
-          document.getElementById("lastActiveDate2").innerHTML =
-            "Last time active: No data";
-        }
+      temperatures2.push(parseFloat(this.responseText));
+      document.getElementById("temperature2").innerHTML = this.responseText;
+      document.getElementById("loader2").style.display = "none";
+      document.getElementById("errorSensorNotConnected2").style.display =
+        "none";
+      document.getElementById("temp2").style.display = "flex";
+      dates2.push(new Date().toLocaleTimeString());
+      if (dates2.length >= 30) {
+        dates2.shift();
+        temperatures2.shift();
+      }
+      myChart2.update();
+    } else {
+      document.getElementById("loader2").style.display = "none";
+      document.getElementById("errorSensorNotConnected2").style.display =
+        "flex";
+      document.getElementById("temp2").style.display = "none";
+      if (dates2.length > 1) {
+        document.getElementById(
+          "lastActiveDate2"
+        ).innerHTML = `Last time active: ${dates2[dates2.length - 1]}`;
       } else {
-        temperatures2.push(parseFloat(this.responseText));
-
-        document.getElementById("temperature2").innerHTML = this.responseText;
-        document.getElementById("loader2").style.display = "none";
-        document.getElementById("errorSensorNotConnected2").style.display =
-          "none";
-        document.getElementById("temp2").style.display = "flex";
-        dates2.push(new Date().toLocaleTimeString());
-        if (dates2.length >= 30) {
-          dates2.shift();
-          temperatures2.shift();
-        }
-        myChart2.update();
+        document.getElementById("lastActiveDate2").innerHTML =
+          "Last time active: No data";
       }
     }
   };
@@ -136,25 +131,16 @@ function getDevicesStatus() {
   xhr.open("GET", "/devices", true);
   xhr.onreadystatechange = function () {
     if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-      if (this.responseText == "Devices not connected") {
-        document.getElementById("fan").innerHTML = "OFF";
-        document.getElementById("radiator").innerHTML = "OFF";
-        document.getElementById("monitorTemperatureRow").style.pointerEvents =
-          "none";
-        document.getElementById("monitorTemperatureRow").style.opacity = "0.2";
-        document.getElementById("controllerDevicesNotConnected").style.display =
-          "block";
-      } else {
-        document.getElementById("controllerDevicesNotConnected").style.display =
-          "none";
+      document.getElementById("controllerDevicesNotConnected").style.display =
+        "none";
 
-        document.getElementById("monitorTemperatureRow").style.pointerEvents =
-          "all";
-        document.getElementById("monitorTemperatureRow").style.opacity = "1";
-        var parsedString = JSON.parse(this.responseText);
-        document.getElementById("fan").innerHTML = parsedString.fan;
-        document.getElementById("radiator").innerHTML = parsedString.radiator;
-      }
+      document.getElementById("monitorTemperatureRow").style.pointerEvents =
+        "all";
+      document.getElementById("monitorTemperatureRow").style.opacity = "1";
+      var parsedString = JSON.parse(this.responseText);
+      document.getElementById("fan").innerHTML = parsedString.fan;
+      document.getElementById("radiator").innerHTML = parsedString.radiator;
+
       switch (document.getElementById("fan").innerHTML) {
         case "ON":
           document.getElementById("fan").style.color = "green";
@@ -171,6 +157,15 @@ function getDevicesStatus() {
           document.getElementById("radiator").style.color = "red";
           break;
       }
+    } else {
+      // error
+      document.getElementById("fan").innerHTML = "OFF";
+      document.getElementById("radiator").innerHTML = "OFF";
+      document.getElementById("monitorTemperatureRow").style.pointerEvents =
+        "none";
+      document.getElementById("monitorTemperatureRow").style.opacity = "0.2";
+      document.getElementById("controllerDevicesNotConnected").style.display =
+        "block";
     }
   };
   xhr.send();

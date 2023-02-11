@@ -47,7 +47,7 @@ def login():
             session['username'] = email
             return redirect(url_for('index')), 303
         else:
-            return render_template('login.html', error='Incorrect email or password'), 400
+            return render_template('login.html', error='Incorrect email or password'), 401
 
 
 # registration page
@@ -61,7 +61,7 @@ def registracija():
         isEmailAlreadyRegisterd = checkIfEmailExists(mysql, request)
         if isEmailAlreadyRegisterd:
             users = getAllUsers(mysql)
-            return render_template('register_another_user.html', error='This email is already in use', users=users, user=user), 400
+            return render_template('register_another_user.html', error='This email is already in use', users=users, user=user), 409
         else:
             registerUser(mysql, request)
             users = getAllUsers(mysql)
@@ -81,15 +81,15 @@ def temperature_sensor1():
         temperature1, isSensorConnected = getCurrentTemperature(
             mysql, dt, table='temperature1')
         if isSensorConnected:
-            return str(temperature1), 201
+            return str(temperature1)
         else:
-            return 'Sensor not connected'
+            return 'Sensor not connected', 404
     elif request.method == "POST":
         value = request.args.get("value")
         if value:
             storeTemperature(mysql, value, table='temperature1')
-            return 'Value stored', 201
-        return 'Value not recieved', 400
+            return 'Value stored'
+        return 'Value not recieved', 404
 
 
 # sensor 2
@@ -99,26 +99,26 @@ def store_sensor2_temp():
         temperature2, isSensorConnected = getCurrentTemperature(
             mysql, dt, table='temperature2')
         if isSensorConnected:
-            return str(temperature2), 201
+            return str(temperature2)
         else:
-            return 'Sensor not connected', 400
+            return 'Sensor not connected', 404
     elif request.method == "POST":
         value = request.args.get("value")
         if value:
             storeTemperature(mysql, value, table='temperature2')
-            return 'Value stored', 201
-        return 'Value not recieved', 400
+            return 'Value stored'
+        return 'Value not recieved', 404
 
 
 @app.route("/targeted_temperature", methods=["GET", "POST"],)
 def targeted_temp():
     if request.method == "GET":
         targetedTemperature = getTargetedTemperature(mysql)
-        return str(targetedTemperature), 201
+        return str(targetedTemperature)
     elif request.method == "POST":
         storeTargetedTemperature(mysql, request)
         targetedTemperature = getTargetedTemperature(mysql)
-        return str(targetedTemperature), 201
+        return str(targetedTemperature)
 
 
 @app.route("/devices", methods=["GET", "POST"])
@@ -128,14 +128,14 @@ def device_status():
         if (areDevicesConnected):
             return devicesStatus, 201
         else:
-            return 'Devices not connected', 400
+            return 'Devices not connected', 404
     elif request.method == "POST":
         storeDevicesStatus(mysql, request)
         devicesStatus, areDevicesConnected = getDevicesStatus(mysql, dt)
         if (areDevicesConnected):
             return devicesStatus, 201
         else:
-            return 'Devices not connected', 400
+            return 'Devices not connected', 404
 
 
 if __name__ == '__main__':
