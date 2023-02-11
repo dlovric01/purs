@@ -150,6 +150,31 @@ def getDevicesStatus(mysql, dt):
     return devicesStatus, areDevicesConnected
 
 
+def checkIfEmailExists(mysql, request):
+    cursor = mysql.connection.cursor()
+    email = request.form.get('email')
+    query = f'SELECT email FROM users WHERE email = %s;'
+    cursor.execute(query, (email,))
+    email = cursor.fetchone()
+    mysql.connection.commit()
+    cursor.close()
+    return email
+
+
+def registerUser(mysql, request):
+    cursor = mysql.connection.cursor()
+    firstName = request.form.get('firstName')
+    lastName = request.form.get('lastName')
+    email = request.form.get('email')
+    password = request.form.get('password')
+    role = request.form.get('role')
+    query = "INSERT INTO users (firstName, lastName, email, password,role) VALUES (%s, %s, %s, UNHEX(SHA2(%s, 256)),%s)"
+    cursor.execute(
+        query, (firstName, lastName, email, password, role,))
+    mysql.connection.commit()
+    cursor.close()
+
+
 def compare_dates(date1, date2):
     if date2 > date1:
         difference = date2 - date1
