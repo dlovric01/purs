@@ -22,13 +22,13 @@ mysql = MySQL(app)
 # starting page with temperature data
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
     if 'username' in session:
         temperatures1, dates1 = getTemperatureData(
-            mysql, session, table='temperature1')
+            mysql, table='temperature1')
         temperatures2, dates2 = getTemperatureData(
-            mysql, session, table='temperature2')
+            mysql, table='temperature2')
         user = getUser(mysql, session)
         return render_template('index.html', temperatures1=temperatures1, dates1=dates1, user=user, temperatures2=temperatures2, dates2=dates2), 201
 

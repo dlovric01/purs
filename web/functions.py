@@ -1,10 +1,7 @@
 
 
-def getTemperatureData(mysql, session, table):
+def getTemperatureData(mysql, table):
     cursor = mysql.connection.cursor()
-    query = f'SELECT firstName, lastName FROM users WHERE email = %s;'
-    cursor.execute(query, (session['username'],))
-    data = cursor.fetchone()
     query = f'SELECT date_time,value FROM {table} ORDER BY id DESC LIMIT 30;'
     cursor.execute(query)
     tempData = cursor.fetchall()
