@@ -94,7 +94,7 @@ def temperature_sensor1():
 
 # sensor 2
 @app.route("/temp_sensor_two", methods=["GET", "POST"])
-def store_sensor2_temp():
+def temperature_sensor2():
     if request.method == "GET":
         temperature2, isSensorConnected = getCurrentTemperature(
             mysql, dt, table='temperature2')
