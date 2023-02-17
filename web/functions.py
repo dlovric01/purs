@@ -25,10 +25,10 @@ def storeTemperature(mysql, value, table):
     query = f"INSERT INTO {table} (date_time, value) VALUES (NOW() , %s);"
     cursor.execute(query, (temp,))
 
-    # starting to delete data from db after there are at least 30 temperatures
     query = f"SELECT * FROM {table}"
     cursor.execute(query,)
     temperatures = cursor.fetchall()
+    # starting to delete data from db after there are at least 30 temperatures
     if len(temperatures) > 30:
         query = f"DELETE FROM {table} ORDER BY id ASC LIMIT 1;"
         cursor.execute(query,)
